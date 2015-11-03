@@ -1,7 +1,7 @@
 {
-    "name": "seed-basic",
+    "name": "seed-nunjucks",
     "version": "1.0.0",
-    "description": "basic project setup",
+    "description": "basic project setup with nunjucks template engine",
     "main": "index.html",
     "author": {
         "name": "Paul Cervenka"

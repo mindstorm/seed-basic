@@ -1,0 +1,7 @@
+{% macro active(activePage="home") %}
+<nav>
+    {% for item in navigation %}
+    <a href="{{item.url}}"{%if activePage == item.class %} class="{{item.class}}"{% endif %}>{{item.name}}</a>
+    {% endfor %}
+</nav>
+{% endmacro %}

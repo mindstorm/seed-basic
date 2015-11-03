@@ -1,0 +1,9 @@
+{% set title = "Titel" %}
+{% set activePage = "home" %}
+
+{% extends "layouts/default.nunjucks" %}
+
+{% block content %}
+    {% include "partials/navigation.nunjucks" %}
+    <p>Hello world! This is HTML5 Boilerplate.</p>
+{% endblock %}

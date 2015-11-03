@@ -1,6 +1,6 @@
 # seed-basic
 
-Basic project setup based on HTML5 Boilerplate.
+Basic project setup with templating engine.
 
 ##### Bower Components
 * jQuery 2.1.4
@@ -9,6 +9,7 @@ Basic project setup based on HTML5 Boilerplate.
 ##### Build Stack
 * Gulp
 * SASS
+* Nunjucks
 
 ## Requirements
 * nodejs

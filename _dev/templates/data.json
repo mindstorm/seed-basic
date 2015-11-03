@@ -1,0 +1,17 @@
+{
+    "navigation": [
+        {
+            "name": "Home",
+            "class": "home",
+            "url": "#"
+        }, {
+            "name": "About",
+            "class": "about",
+            "url": "#"
+        }, {
+            "name": "Contact",
+            "class": "contact",
+            "url": "#"
+        }
+    ]
+}

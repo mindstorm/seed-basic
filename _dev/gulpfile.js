@@ -10,6 +10,9 @@ var uglify = require("gulp-uglify");
 var webserver = require("gulp-webserver");
 var autoprefixer = require("gulp-autoprefixer");
 var opn = require("opn");
+var nunjucksRender = require("gulp-nunjucks-render");
+var prettify = require("gulp-jsbeautifier");
+var data = require("gulp-data");
 
 // Source Paths
 var srcPaths = {
@@ -106,6 +109,28 @@ gulp.task("vendor-scripts", function (done) {
         .on("end", done);
 });
 
+// Nunjuncks Templates
+gulp.task("templates", function (done) {
+    "use strict";
+    nunjucksRender.nunjucks.configure(srcPaths.templates.config, {
+        watch: false,
+        trimBlocks: true
+    });
+
+    // Gets .html and .nunjucks files in pages
+    gulp.src(srcPaths.templates.pages)
+        // Adding data to Nunjucks
+        .pipe(data(function () {
+            return require("./templates/data.json");
+        }))
+        .pipe(nunjucksRender())
+        .pipe(prettify({
+            indentSize: 4
+        }))
+        .pipe(gulp.dest(".."))
+        .on("end", done);
+});
+
 // Task to start the local webserver
 gulp.task("webserver", function () {
     "use strict";
@@ -127,7 +152,7 @@ gulp.task("openbrowser", function () {
 });
 
 // Manual build
-gulp.task("build", ["sass", "uglify", "vendor-styles", "vendor-scripts"]);
+gulp.task("build", ["sass", "uglify", "vendor-styles", "vendor-scripts", "templates"]);
 
 // Watch files for changes
 gulp.task("watch", ["build"], function () {
