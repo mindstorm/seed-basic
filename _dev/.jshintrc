@@ -1,0 +1,36 @@
+{
+    // Settings.
+    "boss": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "expr": true,
+    "immed": true,
+    "latedef": "nofunc",
+    "noarg": true,
+    "noempty": true,
+    "newcap": true,
+    "quotmark": true,
+    "smarttabs": true,
+    "strict": true,
+    "trailing": true,
+    "undef": true,
+    "unused": true,
+
+    // Global variables.
+    "browser": true,
+    "jquery": true,
+    "predef": {
+        "alert": false,
+        "angular": false,
+        "console": false,
+        "define": false,
+        "require": false,
+        "requirejs": false,
+        "moment": false,
+        "nonExistingFunction": false,
+        "cordova": false,
+        "StatusBar": false
+    }
+}
