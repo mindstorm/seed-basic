@@ -1,4 +1,4 @@
-# seed-basic
+# seed-nunjucks
 
 Basic project setup with templating engine.
 
