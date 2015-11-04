@@ -9,7 +9,6 @@ var concat = require("gulp-concat");
 var uglify = require("gulp-uglify");
 var webserver = require("gulp-webserver");
 var autoprefixer = require("gulp-autoprefixer");
-var opn = require("opn");
 
 // Source Paths
 var srcPaths = {
@@ -115,15 +114,9 @@ gulp.task("webserver", function () {
             host: server.host,
             port: server.port,
             livereload: true,
-            directoryListing: false
+            directoryListing: false,
+            open: true
         }));
-});
-
-// Task to open the default browser
-gulp.task("openbrowser", function () {
-    "use strict";
-
-    opn("http://" + server.host + ":" + server.port);
 });
 
 // Manual build
@@ -138,4 +131,4 @@ gulp.task("watch", ["build"], function () {
 });
 
 // Default task
-gulp.task("default", ["webserver", "watch", "openbrowser"]);
+gulp.task("default", ["watch", "webserver"]);
