@@ -31,3 +31,11 @@ Run gulp and start webserver with live-reload:
 ```
 gulp
 ```
+
+## Version History
+
+### 1.1.0
+* add version string replacement.
+
+### 1.0.0
+* initial version.

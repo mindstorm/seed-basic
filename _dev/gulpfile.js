@@ -12,100 +12,96 @@ var autoprefixer = require("gulp-autoprefixer");
 var nunjucksRender = require("gulp-nunjucks-render");
 var prettify = require("gulp-jsbeautifier");
 var data = require("gulp-data");
+var replace = require("gulp-replace");
+
+// Get packackage.json
+var fs = require("fs");
+var pkg = JSON.parse(fs.readFileSync("./package.json"));
 
 // Source Paths
 var srcPaths = {
-    styles: ["./css/**/*.scss"],
-    scripts: [
-        "./js/**/*.js"
-    ],
-    vendor: {
-        scripts: [
-            "./bower_components/jquery/dist/jquery.min.js"
-        ],
-        styles: [
-            "./bower_components/normalize-css/normalize.css"
-        ]
-    },
-    templates: {
-        config: "./templates/",
-        pages: "./templates/pages/**/*.+(html|nunjucks)",
-        watch: "./templates/**/*.*"
-    }
+  styles: ["./css/**/*.scss"],
+  scripts: ["./js/**/*.js"],
+  vendor: {
+    scripts: ["./bower_components/jquery/dist/jquery.min.js"],
+    styles: ["./bower_components/normalize-css/normalize.css"]
+  },
+  templates: ["./templates/**/*.html"]
 };
 
 // Distribution Paths
 var distPaths = {
+  styles: "../css/",
+  scripts: "../js/",
+  vendor: {
     styles: "../css/",
-    scripts: "../js/",
-    vendor: {
-        styles: "../css/",
-        scripts: "../js/"
-    }
+    scripts: "../js/"
+  },
+  templates: "../"
 };
 
 // Server Settings
 var server = {
-    host: "localhost",
-    port: "8001"
+  host: "localhost",
+  port: "8001"
 };
 
 // Complile SCSS
 gulp.task("sass", function (done) {
-    "use strict";
+  "use strict";
 
-    gulp.src("./css/main.bundle.scss")
-        .pipe(sass({
-            errLogToConsole: true
-        }))
-        .pipe(autoprefixer({
-            browsers: ["last 2 versions"]
-        }))
-        .pipe(gulp.dest(distPaths.styles))
-        .pipe(minifyCss({
-            keepSpecialComments: 0
-        }))
-        .pipe(rename({
-            extname: ".min.css"
-        }))
-        .pipe(gulp.dest(distPaths.styles))
-        .on("end", done);
+  gulp.src("./css/main.bundle.scss")
+    .pipe(sass({
+      errLogToConsole: true
+    }))
+    .pipe(autoprefixer({
+      browsers: ["last 2 versions"]
+    }))
+    .pipe(gulp.dest(distPaths.styles))
+    .pipe(minifyCss({
+      keepSpecialComments: 0
+    }))
+    .pipe(rename({
+      extname: ".min.css"
+    }))
+    .pipe(gulp.dest(distPaths.styles))
+    .on("end", done);
 });
 
 // UglifyJs task.
 gulp.task("uglify", function (done) {
-    "use strict";
+  "use strict";
 
-    gulp.src(srcPaths.scripts)
-        .pipe(concat("main.bundle.min.js"))
-        .pipe(uglify({
-            mangle: false
-        }))
-        .pipe(gulp.dest(distPaths.scripts))
-        .on("end", done);
+  gulp.src(srcPaths.scripts)
+    .pipe(concat("main.bundle.min.js"))
+    .pipe(uglify({
+      mangle: false
+    }))
+    .pipe(gulp.dest(distPaths.scripts))
+    .on("end", done);
 });
 
 // Task to minify all vendor specific files.
 gulp.task("vendor-styles", function (done) {
-    "use strict";
+  "use strict";
 
-    gulp.src(srcPaths.vendor.styles)
-        .pipe(concat("vendor.bundle.min.css"))
-        .pipe(minifyCss({
-            keepSpecialComments: 0
-        }))
-        .pipe(gulp.dest(distPaths.vendor.styles))
-        .on("end", done);
+  gulp.src(srcPaths.vendor.styles)
+    .pipe(concat("vendor.bundle.min.css"))
+    .pipe(minifyCss({
+      keepSpecialComments: 0
+    }))
+    .pipe(gulp.dest(distPaths.vendor.styles))
+    .on("end", done);
 });
 
 // Task to minify all vendor specific files.
 gulp.task("vendor-scripts", function (done) {
-    "use strict";
+  "use strict";
 
-    gulp.src(srcPaths.vendor.scripts)
-        .pipe(concat("vendor.bundle.min.js"))
-        .pipe(gulp.dest(distPaths.vendor.scripts))
-        .on("end", done);
+  gulp.src(srcPaths.vendor.scripts)
+    .pipe(concat("vendor.bundle.min.js"))
+    .pipe(gulp.dest(distPaths.vendor.scripts))
+    .on("end", done);
 });
 
 // Nunjuncks Templates
@@ -118,6 +114,9 @@ gulp.task("templates", function (done) {
 
     // Gets .html and .nunjucks files in pages
     gulp.src(srcPaths.templates.pages)
+    
+        .pipe(replace("%VERSION%", pkg.version))
+    
         // Adding data to Nunjucks
         .pipe(data(function () {
             return require("./templates/data.json");
@@ -132,16 +131,16 @@ gulp.task("templates", function (done) {
 
 // Task to start the local webserver
 gulp.task("webserver", function () {
-    "use strict";
+  "use strict";
 
-    gulp.src("../")
-        .pipe(webserver({
-            host: server.host,
-            port: server.port,
-            livereload: true,
-            directoryListing: false,
-            open: true
-        }));
+  gulp.src("../")
+    .pipe(webserver({
+      host: server.host,
+      port: server.port,
+      livereload: true,
+      directoryListing: false,
+      open: true
+    }));
 });
 
 // Manual build
@@ -149,10 +148,11 @@ gulp.task("build", ["sass", "uglify", "vendor-styles", "vendor-scripts", "templa
 
 // Watch files for changes
 gulp.task("watch", ["build"], function () {
-    "use strict";
+  "use strict";
 
-    gulp.watch(srcPaths.styles, ["sass"]);
-    gulp.watch(srcPaths.scripts, ["uglify"]);
+  gulp.watch(srcPaths.templates, ["templates"]);
+  gulp.watch(srcPaths.styles, ["sass"]);
+  gulp.watch(srcPaths.scripts, ["uglify"]);
 });
 
 // Default task
