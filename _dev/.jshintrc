@@ -29,8 +29,6 @@
         "require": false,
         "requirejs": false,
         "moment": false,
-        "nonExistingFunction": false,
-        "cordova": false,
-        "StatusBar": false
+        "nonExistingFunction": false
     }
 }

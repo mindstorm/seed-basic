@@ -33,6 +33,10 @@ gulp
 
 ## Version History
 
+### 1.2.0
+* add browsersync, plumber, prettify, jshint
+* restructure gulpfile.js
+
 ### 1.1.0
 * add version string replacement.
 
