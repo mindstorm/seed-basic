@@ -1,35 +1,62 @@
-// Include gulp
-var gulp = require("gulp");
+/*
+ * DEFINITIONS
+ ****************************************************/
 
-// Include Plugins
+
+/* include gulp & node modules
+ * ------------------------------------------------ */
+var gulp = require("gulp");
+var fs = require("fs");
+
+
+/* include gulp plugins
+ * ------------------------------------------------ */
 var sass = require("gulp-sass");
 var minifyCss = require("gulp-minify-css");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
 var uglify = require("gulp-uglify");
-var webserver = require("gulp-webserver");
 var autoprefixer = require("gulp-autoprefixer");
 var nunjucksRender = require("gulp-nunjucks-render");
 var prettify = require("gulp-jsbeautifier");
 var data = require("gulp-data");
 var replace = require("gulp-replace");
+var browserSync = require("browser-sync");
+var jshint = require("gulp-jshint");
+var plumber = require("gulp-plumber");
+var prettify = require("gulp-jsbeautifier");
 
-// Get packackage.json
-var fs = require("fs");
+
+/* get packackage.json
+ * ------------------------------------------------ */
 var pkg = JSON.parse(fs.readFileSync("./package.json"));
 
-// Source Paths
+
+/* source paths
+ * ------------------------------------------------ */
 var srcPaths = {
-  styles: ["./css/**/*.scss"],
-  scripts: ["./js/**/*.js"],
+  styles: [
+    "./css/**/*.scss"
+  ],
+  scripts: [
+    "./js/**/*.js"
+  ],
   vendor: {
-    scripts: ["./bower_components/jquery/dist/jquery.min.js"],
-    styles: ["./bower_components/normalize-css/normalize.css"]
+    styles: [
+      "./bower_components/normalize-css/normalize.css"
+    ],
+    scripts: [
+      "./bower_components/jquery/dist/jquery.min.js"
+    ]
   },
-  templates: ["./templates/**/*.html"]
+  templates: [
+    "./templates/**/*.html"
+  ]
 };
 
-// Distribution Paths
+
+/* distribution paths
+ * ------------------------------------------------ */
 var distPaths = {
   styles: "../css/",
   scripts: "../js/",
@@ -40,120 +67,207 @@ var distPaths = {
   templates: "../"
 };
 
-// Server Settings
-var server = {
-  host: "localhost",
-  port: "8001"
-};
+/* server settings
+ * ------------------------------------------------ */
+var reload = browserSync.reload;
 
-// Complile SCSS
-gulp.task("sass", function (done) {
+
+/*
+ * TASKS
+ ****************************************************/
+
+
+/* templates
+ * ------------------------------------------------ */
+gulp.task("templates", function (done) {
+  "use strict";
+
+  // nunjucks settings
+  nunjucksRender.nunjucks.configure(srcPaths.templates.config, {
+    watch: false,
+    trimBlocks: true
+  });
+
+  gulp.src(srcPaths.templates)
+
+  // replace version string
+  .pipe(replace("%VERSION%", pkg.version))
+
+  // Adding data to Nunjucks
+  .pipe(data(function () {
+    return require("./templates/data.json");
+  }))
+
+  // render nunjucks templates
+  .pipe(nunjucksRender())
+
+  // prettify
+  .pipe(prettify({
+    indentSize: 4
+  }))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.templates))
+
+  // finish
+  .on("end", done);
+});
+
+
+/* styles
+ * ------------------------------------------------ */
+gulp.task("styles", function (done) {
   "use strict";
 
   gulp.src("./css/main.bundle.scss")
-    .pipe(sass({
-      errLogToConsole: true
-    }))
-    .pipe(autoprefixer({
-      browsers: ["last 2 versions"]
-    }))
-    .pipe(gulp.dest(distPaths.styles))
-    .pipe(minifyCss({
-      keepSpecialComments: 0
-    }))
-    .pipe(rename({
-      extname: ".min.css"
-    }))
-    .pipe(gulp.dest(distPaths.styles))
-    .on("end", done);
+
+  // init plumber
+  .pipe(plumber())
+
+  // compile sass
+  .pipe(sass({
+    errLogToConsole: true
+  }))
+
+  // add vendor prefixes
+  .pipe(autoprefixer({
+    browsers: ["last 2 versions"]
+  }))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.styles))
+
+  // minify
+  .pipe(minifyCss({
+    keepSpecialComments: 0
+  }))
+
+  // rename minified file
+  .pipe(rename({
+    extname: ".min.css"
+  }))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.styles))
+
+  // finish
+  .on("end", done);
 });
 
-// UglifyJs task.
-gulp.task("uglify", function (done) {
+
+/* scripts
+ * ------------------------------------------------ */
+gulp.task("scripts", function (done) {
   "use strict";
 
   gulp.src(srcPaths.scripts)
-    .pipe(concat("main.bundle.min.js"))
-    .pipe(uglify({
-      mangle: false
-    }))
-    .pipe(gulp.dest(distPaths.scripts))
-    .on("end", done);
+
+  // init plumber
+  .pipe(plumber())
+
+  // do js hint check
+  .pipe(jshint())
+
+  // reporter output
+  .pipe(jshint.reporter("default"))
+
+  // fail task on reporter output
+  .pipe(jshint.reporter("fail"))
+
+  // concat
+  .pipe(concat("main.bundle.min.js"))
+
+  // minify
+  .pipe(uglify({
+    mangle: false
+  }))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.scripts))
+
+  // finish
+  .on("end", done);
 });
 
-// Task to minify all vendor specific files.
+
+/* minify all vendor specific styles
+ * ------------------------------------------------ */
 gulp.task("vendor-styles", function (done) {
   "use strict";
 
   gulp.src(srcPaths.vendor.styles)
-    .pipe(concat("vendor.bundle.min.css"))
-    .pipe(minifyCss({
-      keepSpecialComments: 0
-    }))
-    .pipe(gulp.dest(distPaths.vendor.styles))
-    .on("end", done);
+
+  // init plumber
+  .pipe(plumber())
+
+  // concat all styles into vendor.bundle.min.css
+  .pipe(concat("vendor.bundle.min.css"))
+
+  // minify
+  .pipe(minifyCss({
+    keepSpecialComments: 0
+  }))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.vendor.styles))
+
+  // finish
+  .on("end", done);
 });
 
-// Task to minify all vendor specific files.
+
+/* minify all vendor specific scripts
+ * ------------------------------------------------ */
 gulp.task("vendor-scripts", function (done) {
   "use strict";
 
   gulp.src(srcPaths.vendor.scripts)
-    .pipe(concat("vendor.bundle.min.js"))
-    .pipe(gulp.dest(distPaths.vendor.scripts))
-    .on("end", done);
+
+  // init plumber
+  .pipe(plumber())
+
+  // concat all scripts into vendor.bundle.min.js
+  .pipe(concat("vendor.bundle.min.js"))
+
+  // write to dist
+  .pipe(gulp.dest(distPaths.vendor.scripts))
+
+  // finish
+  .on("end", done);
 });
 
-// Nunjuncks Templates
-gulp.task("templates", function (done) {
-    "use strict";
-    nunjucksRender.nunjucks.configure(srcPaths.templates.config, {
-        watch: false,
-        trimBlocks: true
-    });
 
-    // Gets .html and .nunjucks files in pages
-    gulp.src(srcPaths.templates.pages)
-    
-        .pipe(replace("%VERSION%", pkg.version))
-    
-        // Adding data to Nunjucks
-        .pipe(data(function () {
-            return require("./templates/data.json");
-        }))
-        .pipe(nunjucksRender())
-        .pipe(prettify({
-            indentSize: 4
-        }))
-        .pipe(gulp.dest(".."))
-        .on("end", done);
-});
-
-// Task to start the local webserver
+/* local webserver
+ * ------------------------------------------------ */
 gulp.task("webserver", function () {
   "use strict";
 
-  gulp.src("../")
-    .pipe(webserver({
-      host: server.host,
-      port: server.port,
-      livereload: true,
-      directoryListing: false,
-      open: true
-    }));
+  browserSync({
+    server: {
+      baseDir: "../.",
+      notify: false
+    }
+  });
+
 });
 
-// Manual build
-gulp.task("build", ["sass", "uglify", "vendor-styles", "vendor-scripts", "templates"]);
 
-// Watch files for changes
+/* manual build
+ * ------------------------------------------------ */
+gulp.task("build", ["templates", "styles", "scripts", "vendor-styles", "vendor-scripts"]);
+
+
+/* watch files for changes
+ * ------------------------------------------------ */
 gulp.task("watch", ["build"], function () {
   "use strict";
 
-  gulp.watch(srcPaths.templates, ["templates"]);
-  gulp.watch(srcPaths.styles, ["sass"]);
-  gulp.watch(srcPaths.scripts, ["uglify"]);
+  // watch and reload browsersync
+  gulp.watch(srcPaths.templates, ["templates", reload]);
+  gulp.watch(srcPaths.styles, ["styles", reload]);
+  gulp.watch(srcPaths.scripts, ["scripts", reload]);
 });
 
-// Default task
+/* default task
+ * ------------------------------------------------ */
 gulp.task("default", ["watch", "webserver"]);
