@@ -11,10 +11,10 @@
     <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
 
     <!-- Vendor -->
-    <link rel="stylesheet" href="css/vendor.bundle.min.css">
+    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=%VERSION%">
 
     <!-- Main -->
-    <link rel="stylesheet" href="css/main.bundle.min.css">
+    <link rel="stylesheet" href="css/main.bundle.min.css?v=%VERSION%">
 </head>
 
 <body>
@@ -23,10 +23,10 @@
     {% block content %}{% endblock %}
 
     <!-- Vendor -->
-    <script src="js/vendor.bundle.min.js"></script>
+    <script src="js/vendor.bundle.min.js?v=%VERSION%"></script>
 
     <!-- Main -->
-    <script src="js/main.bundle.min.js"></script>
+    <script src="js/main.bundle.min.js?v=%VERSION%"></script>
 
 </body>
 

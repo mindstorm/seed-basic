@@ -49,9 +49,11 @@ var srcPaths = {
       "./bower_components/jquery/dist/jquery.min.js"
     ]
   },
-  templates: [
-    "./templates/**/*.html"
-  ]
+  templates: {
+    config: "./templates/",
+    pages: "./templates/pages/**/*.+(html|nunjucks)",
+    watch: "./templates/**/*.*"
+  }
 };
 
 
@@ -88,10 +90,7 @@ gulp.task("templates", function (done) {
     trimBlocks: true
   });
 
-  gulp.src(srcPaths.templates)
-
-  // replace version string
-  .pipe(replace("%VERSION%", pkg.version))
+  gulp.src(srcPaths.templates.pages)
 
   // Adding data to Nunjucks
   .pipe(data(function () {
@@ -100,6 +99,9 @@ gulp.task("templates", function (done) {
 
   // render nunjucks templates
   .pipe(nunjucksRender())
+
+  // replace version string
+  .pipe(replace("%VERSION%", pkg.version))
 
   // prettify
   .pipe(prettify({
@@ -263,10 +265,11 @@ gulp.task("watch", ["build"], function () {
   "use strict";
 
   // watch and reload browsersync
-  gulp.watch(srcPaths.templates, ["templates", reload]);
+  gulp.watch(srcPaths.templates.watch, ["templates", reload]);
   gulp.watch(srcPaths.styles, ["styles", reload]);
   gulp.watch(srcPaths.scripts, ["scripts", reload]);
 });
+
 
 /* default task
  * ------------------------------------------------ */
