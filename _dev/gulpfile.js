@@ -69,6 +69,7 @@ var distPaths = {
   templates: "../"
 };
 
+
 /* server settings
  * ------------------------------------------------ */
 var reload = browserSync.reload;
@@ -91,6 +92,9 @@ gulp.task("templates", function (done) {
   });
 
   gulp.src(srcPaths.templates.pages)
+
+  // init plumber
+  .pipe(plumber())
 
   // Adding data to Nunjucks
   .pipe(data(function () {
