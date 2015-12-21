@@ -2,7 +2,7 @@
 
 Basic project setup based on HTML5 Boilerplate.
 
-##### Bower Components
+##### Node Modules
 * jQuery 2.1.4
 * normalize-css 3.0.3
 
@@ -12,18 +12,12 @@ Basic project setup based on HTML5 Boilerplate.
 
 ## Requirements
 * nodejs
-* bower
 
 ## Setup
 
 Install gulp and its plugins:
 ```
 npm install
-```
-
-Install bower components:
-```
-bower install
 ```
 
 Run gulp and start webserver with live-reload:
