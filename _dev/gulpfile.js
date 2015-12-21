@@ -43,7 +43,8 @@ var srcPaths = {
       "./bower_components/normalize-css/normalize.css"
     ],
     scripts: [
-      "./bower_components/jquery/dist/jquery.min.js"
+      "./bower_components/jquery/dist/jquery.min.js",
+      "./bower_components/angular/angular.min.js"
     ]
   },
   templates: [

@@ -1,10 +1,11 @@
 # seed-basic
 
-Basic project setup based on HTML5 Boilerplate.
+Basic project setup with AngularJS 1.x
 
 ##### Bower Components
 * jQuery 2.1.4
 * normalize-css 3.0.3
+* AngularJS 1.4.8
 
 ##### Build Stack
 * Gulp
@@ -32,6 +33,9 @@ gulp
 ```
 
 ## Version History
+
+### 1.3.0
+* add angular
 
 ### 1.2.0
 * add browsersync, plumber, prettify, jshint

@@ -1,9 +1,14 @@
 /*
- * JQUERY - DOCUMENT READY
+ * ANGULAR APP
  ****************************************************/
-$(function () {
-    "use strict";
+var app = angular.module("myApp", []);
 
-    console.log("Hello World!");
 
-});
+/* default controller
+ * ------------------------------------------------ */
+app.controller("DefaultCtrl", ["$scope", function ($scope) {
+  "use strict";
+
+  $scope.dummy = "Hello Angular World!";
+
+}]);
