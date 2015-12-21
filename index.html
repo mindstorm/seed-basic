@@ -4,29 +4,39 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Titel - v1.2.0</title>
+    <title>Titel - v1.3.0</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
 
     <!-- Vendor -->
-    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=1.2.0">
+    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=1.3.0">
 
-    <!-- Main -->
-    <link rel="stylesheet" href="css/main.bundle.min.css?v=1.2.0">
+    <!-- App -->
+    <link rel="stylesheet" href="css/app.bundle.min.css?v=1.3.0">
 </head>
 
-<body ng-app="myApp" ng-controller="DefaultCtrl">
+<body ng-app="App" ng-controller="DefaultCtrl">
 
-    <!-- Add your site or application content here -->
-    <p>{{ dummy }} This is HTML5 Boilerplate.</p>
+    <!-- navigation -->
+    <nav>
+        <a ui-sref="home">Home</a>
+        <a ui-sref="about">About</a>
+        <a ui-sref="contact">Contact</a>
+    </nav>
+
+    <!-- view -->
+    <ui-view name="main"></ui-view>
 
     <!-- Vendor -->
-    <script src="js/vendor.bundle.min.js?v=1.2.0"></script>
+    <script src="js/vendor.bundle.min.js?v=1.3.0"></script>
 
-    <!-- Main -->
-    <script src="js/main.bundle.min.js?v=1.2.0"></script>
+    <!-- App -->
+    <script src="js/app.bundle.min.js?v=1.3.0"></script>
+
+    <!-- Templates -->
+    <script src="js/app.templates.min.js?v=1.3.0"></script>
 
 </body>
 

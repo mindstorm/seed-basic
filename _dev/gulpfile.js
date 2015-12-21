@@ -22,6 +22,7 @@ var browserSync = require("browser-sync");
 var jshint = require("gulp-jshint");
 var plumber = require("gulp-plumber");
 var prettify = require("gulp-jsbeautifier");
+var templateCache = require("gulp-angular-templatecache");
 
 
 /* get packackage.json
@@ -44,11 +45,15 @@ var srcPaths = {
     ],
     scripts: [
       "./bower_components/jquery/dist/jquery.min.js",
-      "./bower_components/angular/angular.min.js"
+      "./bower_components/angular/angular.min.js",
+      "./bower_components/angular-ui-router/release/angular-ui-router.min.js"
     ]
   },
   templates: [
     "./templates/**/*.html"
+  ],
+  replace: [
+    "./index.html"
   ]
 };
 
@@ -62,7 +67,8 @@ var distPaths = {
     styles: "../css/",
     scripts: "../js/"
   },
-  templates: "../"
+  templates: "../js/",
+  replace: "../"
 };
 
 /* server settings
@@ -75,12 +81,15 @@ var reload = browserSync.reload;
  ****************************************************/
 
 
-/* templates
+/* replace
  * ------------------------------------------------ */
-gulp.task("templates", function (done) {
+gulp.task("replace", function (done) {
   "use strict";
 
-  gulp.src(srcPaths.templates)
+  gulp.src(srcPaths.replace)
+
+  // init plumber
+  .pipe(plumber())
 
   // replace version string
   .pipe(replace("%VERSION%", pkg.version))
@@ -91,10 +100,40 @@ gulp.task("templates", function (done) {
   }))
 
   // write to dist
+  .pipe(gulp.dest(distPaths.replace))
+
+  // finish
+  .on("end", done);
+});
+
+
+/* templates
+ * ------------------------------------------------ */
+gulp.task("templates", function (done) {
+  "use strict";
+
+  gulp.src(srcPaths.templates)
+
+  // init plumber
+  .pipe(plumber())
+
+  // add all templates to one file
+  .pipe(templateCache("app.templates.min.js", {
+    module: "App",
+    base: ""
+  }))
+
+  // minimize
+  .pipe(uglify({
+    mangle: false
+  }))
+
+  // write to dist
   .pipe(gulp.dest(distPaths.templates))
 
   // finish
   .on("end", done);
+
 });
 
 
@@ -103,7 +142,7 @@ gulp.task("templates", function (done) {
 gulp.task("styles", function (done) {
   "use strict";
 
-  gulp.src("./css/main.bundle.scss")
+  gulp.src("./css/app.bundle.scss")
 
   // init plumber
   .pipe(plumber())
@@ -159,7 +198,7 @@ gulp.task("scripts", function (done) {
   .pipe(jshint.reporter("fail"))
 
   // concat
-  .pipe(concat("main.bundle.min.js"))
+  .pipe(concat("app.bundle.min.js"))
 
   // minify
   .pipe(uglify({
@@ -238,7 +277,7 @@ gulp.task("webserver", function () {
 
 /* manual build
  * ------------------------------------------------ */
-gulp.task("build", ["templates", "styles", "scripts", "vendor-styles", "vendor-scripts"]);
+gulp.task("build", ["replace", "templates", "styles", "scripts", "vendor-styles", "vendor-scripts"]);
 
 
 /* watch files for changes
@@ -247,6 +286,7 @@ gulp.task("watch", ["build"], function () {
   "use strict";
 
   // watch and reload browsersync
+  gulp.watch(srcPaths.replace, ["replace", reload]);
   gulp.watch(srcPaths.templates, ["templates", reload]);
   gulp.watch(srcPaths.styles, ["styles", reload]);
   gulp.watch(srcPaths.scripts, ["scripts", reload]);

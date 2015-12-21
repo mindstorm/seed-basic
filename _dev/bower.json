@@ -16,6 +16,7 @@
   "devDependencies": {
     "jquery": "~2.1.4",
     "normalize-css": "normalize.css#~3.0.3",
-    "angular": "~1.4.8"
+    "angular": "~1.4.8",
+    "angular-ui-router": "~0.2.15"
   }
 }
