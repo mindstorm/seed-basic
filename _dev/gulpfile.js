@@ -102,7 +102,7 @@ gulp.task("templates", function (done) {
 gulp.task("styles", function (done) {
   "use strict";
 
-  gulp.src("./css/main.bundle.scss")
+  gulp.src("./css/app.bundle.scss")
 
   // init plumber
   .pipe(plumber())
@@ -158,7 +158,7 @@ gulp.task("scripts", function (done) {
   .pipe(jshint.reporter("fail"))
 
   // concat
-  .pipe(concat("main.bundle.min.js"))
+  .pipe(concat("app.bundle.min.js"))
 
   // minify
   .pipe(uglify({
