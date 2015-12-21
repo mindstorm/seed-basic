@@ -41,12 +41,12 @@ var srcPaths = {
   ],
   vendor: {
     styles: [
-      "./bower_components/normalize-css/normalize.css"
+      "./node_modules/normalize.css/normalize.css"
     ],
     scripts: [
-      "./bower_components/jquery/dist/jquery.min.js",
-      "./bower_components/angular/angular.min.js",
-      "./bower_components/angular-ui-router/release/angular-ui-router.min.js"
+      "./node_modules/jquery/dist/jquery.min.js",
+      "./node_modules/angular/angular.min.js",
+      "./node_modules/angular-ui-router/release/angular-ui-router.min.js"
     ]
   },
   templates: [
