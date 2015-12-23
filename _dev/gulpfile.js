@@ -99,7 +99,6 @@ gulp.task("templates", function (done) {
   gulp.src(srcPaths.templates)
 
   // replace tokens
-  //.pipe(replace("%VERSION%", pkg.version))
   .pipe(replace(/%(.*?)%/g, replaceTokens))
 
   // prettify
