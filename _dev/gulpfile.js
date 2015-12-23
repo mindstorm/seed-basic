@@ -29,6 +29,23 @@ var prettify = require("gulp-jsbeautifier");
 var pkg = JSON.parse(fs.readFileSync("./package.json"));
 
 
+/* replace tokens
+ * ------------------------------------------------ */
+var replaceTokens = function (match, tokenName) {
+  "use strict";
+
+  var tokenValue = pkg[tokenName];
+
+  if (tokenValue) {
+    return tokenValue;
+  } else {
+    console.warn("No matching token found for %s", tokenName);
+    return "";
+  }
+
+};
+
+
 /* source paths
  * ------------------------------------------------ */
 var srcPaths = {
@@ -81,8 +98,9 @@ gulp.task("templates", function (done) {
 
   gulp.src(srcPaths.templates)
 
-  // replace version string
-  .pipe(replace("%VERSION%", pkg.version))
+  // replace tokens
+  //.pipe(replace("%VERSION%", pkg.version))
+  .pipe(replace(/%(.*?)%/g, replaceTokens))
 
   // prettify
   .pipe(prettify({
