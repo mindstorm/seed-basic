@@ -4,17 +4,19 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ title }}</title>
-    <meta name="description" content="">
+
+    <title>{{ title }} v%version%</title>
+
+    <meta name="description" content="%description%">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
 
     <!-- Vendor -->
-    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=%VERSION%">
+    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=%version%">
 
     <!-- App -->
-    <link rel="stylesheet" href="css/app.bundle.min.css?v=%VERSION%">
+    <link rel="stylesheet" href="css/app.bundle.min.css?v=%version%">
 </head>
 
 <body>
@@ -23,10 +25,10 @@
     {% block content %}{% endblock %}
 
     <!-- Vendor -->
-    <script src="js/vendor.bundle.min.js?v=%VERSION%"></script>
+    <script src="js/vendor.bundle.min.js?v=%version%"></script>
 
     <!-- App -->
-    <script src="js/app.bundle.min.js?v=%VERSION%"></script>
+    <script src="js/app.bundle.min.js?v=%version%"></script>
 
 </body>
 
