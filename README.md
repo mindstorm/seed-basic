@@ -28,6 +28,10 @@ gulp
 
 ## Version History
 
+### 1.4.0
+* add replace tokens function
+* upgrade packages
+
 ### 1.3.0
 * add angular
 * remove bower
