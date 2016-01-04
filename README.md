@@ -28,6 +28,9 @@ gulp
 
 ## Version History
 
+### 1.5.0
+* replace minify-css with cssnano
+
 ### 1.4.0
 * add replace tokens function
 * upgrade packages
