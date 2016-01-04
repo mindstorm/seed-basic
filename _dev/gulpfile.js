@@ -12,7 +12,7 @@ var fs = require("fs");
 /* include gulp plugins
  * ------------------------------------------------ */
 var sass = require("gulp-sass");
-var minifyCss = require("gulp-minify-css");
+var minify = require("gulp-cssnano");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
 var uglify = require("gulp-uglify");
@@ -138,9 +138,7 @@ gulp.task("styles", function (done) {
   .pipe(gulp.dest(distPaths.styles))
 
   // minify
-  .pipe(minifyCss({
-    keepSpecialComments: 0
-  }))
+  .pipe(minify({discardComments: {removeAll: true}}))
 
   // rename minified file
   .pipe(rename({
@@ -204,9 +202,7 @@ gulp.task("vendor-styles", function (done) {
   .pipe(concat("vendor.bundle.min.css"))
 
   // minify
-  .pipe(minifyCss({
-    keepSpecialComments: 0
-  }))
+  .pipe(minify({discardComments: {removeAll: true}}))
 
   // write to dist
   .pipe(gulp.dest(distPaths.vendor.styles))
