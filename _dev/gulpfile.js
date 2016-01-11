@@ -51,19 +51,19 @@ var replaceTokens = function (match, tokenName) {
  * ------------------------------------------------ */
 var srcPaths = {
   styles: [
-    "./css/**/*.scss"
+    "css/**/*.scss"
   ],
   scripts: [
-    "./js/**/*.js"
+    "js/**/*.js"
   ],
   vendor: {
     styles: [
-      "./node_modules/normalize.css/normalize.css"
+      "node_modules/normalize.css/normalize.css"
     ],
     scripts: [
-      "./node_modules/jquery/dist/jquery.min.js",
-      "./node_modules/angular/angular.min.js",
-      "./node_modules/angular-ui-router/release/angular-ui-router.min.js"
+      "node_modules/jquery/dist/jquery.min.js",
+      "node_modules/angular/angular.min.js",
+      "node_modules/angular-ui-router/release/angular-ui-router.min.js"
     ]
   },
   templates: [
@@ -159,7 +159,7 @@ gulp.task("templates", function (done) {
 gulp.task("styles", function (done) {
   "use strict";
 
-  gulp.src("./css/app.bundle.scss")
+  gulp.src("css/app.bundle.scss")
 
   // init plumber
   .pipe(plumber())
