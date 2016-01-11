@@ -27,6 +27,9 @@ gulp
 
 ## Version History
 
+### 1.5.1
+* use relative paths for detecting new / deleted files
+
 ### 1.5.0
 * replace minify-css with cssnano
 
