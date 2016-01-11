@@ -1,6 +1,6 @@
 {
   "name": "seed-nunjucks",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "basic project setup with nunjucks template engine",
   "main": "index.html",
   "author": {
