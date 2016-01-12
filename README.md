@@ -3,13 +3,15 @@
 Basic project setup with templating engine.
 
 ##### Node Modules
-* jQuery 2.1.4
-* normalize-css 3.0.3
+* jQuery
+* normalize-css
 
 ##### Build Stack
-* Gulp
-* SASS
-* Nunjucks
+* gulp
+* scss
+* browser-sync
+* jshint
+* nunjucks
 
 ## Requirements
 * nodejs
@@ -28,6 +30,9 @@ gulp
 
 ## Version History
 
+### 1.5.2
+* update packages
+
 ### 1.5.1
 * use relative paths for detecting new / deleted files
 
@@ -36,7 +41,7 @@ gulp
 
 ### 1.4.0
 * add replace tokens function
-* upgrade packages
+* update packages
 
 ### 1.3.0
 * remove bower
