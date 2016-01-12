@@ -3,13 +3,15 @@
 Basic project setup with AngularJS 1.x
 
 ##### Node Modules
-* jQuery 2.1.4
-* normalize-css 3.0.3
-* AngularJS 1.4.8
+* jQuery
+* normalize-css
+* AngularJS 1.x
 
 ##### Build Stack
-* Gulp
-* SASS
+* gulp
+* scss
+* browser-sync
+* jshint
 
 ## Requirements
 * nodejs
@@ -28,6 +30,9 @@ gulp
 
 ## Version History
 
+### 1.5.2
+* update packages
+
 ### 1.5.1
 * use relative paths for detecting new / deleted files
 
@@ -36,7 +41,7 @@ gulp
 
 ### 1.4.0
 * add replace tokens function
-* upgrade packages
+* update packages
 
 ### 1.3.0
 * add angular
