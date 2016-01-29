@@ -264,6 +264,7 @@ gulp.task("watch", ["build"], function () {
   gulp.watch(srcPaths.scripts, ["scripts", reload]);
 });
 
+
 /* default task
  * ------------------------------------------------ */
 gulp.task("default", ["watch", "webserver"]);
