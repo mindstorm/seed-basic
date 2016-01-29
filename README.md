@@ -30,6 +30,9 @@ gulp
 
 ## Version History
 
+### 1.5.3
+* update packages
+
 ### 1.5.2
 * update packages
 
