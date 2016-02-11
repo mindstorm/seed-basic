@@ -30,6 +30,13 @@ gulp
 
 ## Version History
 
+### 1.6.1
+* update packages
+* optimize sass error logging
+
+### 1.6.0
+* refactor gulpfile.js
+
 ### 1.5.3
 * update packages
 
