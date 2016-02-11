@@ -139,9 +139,7 @@ gulp.task("styles", function (done) {
   .pipe(plumber())
 
   // compile sass
-  .pipe(css_sass({
-    errLogToConsole: true
-  }))
+  .pipe(css_sass().on("error", css_sass.logError))
 
   // add vendor prefixes
   .pipe(css_prefix({
