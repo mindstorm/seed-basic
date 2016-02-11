@@ -11,20 +11,21 @@ var fs = require("fs");
 
 /* include gulp plugins
  * ------------------------------------------------ */
-var sass = require("gulp-sass");
-var minify = require("gulp-cssnano");
+var plumber = require("gulp-plumber");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
-var uglify = require("gulp-uglify");
-var autoprefixer = require("gulp-autoprefixer");
-var nunjucksRender = require("gulp-nunjucks-render");
-var prettify = require("gulp-jsbeautifier");
-var data = require("gulp-data");
 var replace = require("gulp-replace");
-var browserSync = require("browser-sync");
-var jshint = require("gulp-jshint");
-var plumber = require("gulp-plumber");
 var prettify = require("gulp-jsbeautifier");
+var serve = require("browser-sync");
+var data = require("gulp-data");
+var nunjucks = require("gulp-nunjucks-render");
+
+var css_sass = require("gulp-sass");
+var css_prefix = require("gulp-autoprefixer");
+var css_minify = require("gulp-cssnano");
+
+var js_jshint = require("gulp-jshint");
+var js_minify = require("gulp-uglify");
 
 
 /* get packackage.json
@@ -45,51 +46,60 @@ var replaceTokens = function (match, tokenName) {
     console.warn("No matching token found for %s", tokenName);
     return "";
   }
-
 };
 
 
-/* source paths
- * ------------------------------------------------ */
-var srcPaths = {
-  styles: [
-    "css/**/*.scss"
-  ],
-  scripts: [
-    "js/**/*.js"
-  ],
-  vendor: {
-    styles: [
-      "node_modules/normalize.css/normalize.css"
-    ],
-    scripts: [
-      "node_modules/jquery/dist/jquery.min.js"
-    ]
+/*
+ * CONFIG
+ ****************************************************/
+var config = {
+
+  // styles
+  styles: {
+    src: ["css/main.bundle.scss", "css/**/*.scss", "css/**/*.css"],
+    dest: {
+      path: "../css/",
+      file: "main.bundle.css"
+    },
+
+    // vendor styles
+    vendor: {
+      src: ["node_modules/normalize.css/normalize.css"],
+      dest: {
+        path: "../css/",
+        file: "vendor.bundle.min.css"
+      }
+    }
   },
+  // scripts
+  scripts: {
+    src: ["js/**/*.js"],
+    dest: {
+      path: "../js/",
+      file: "main.bundle.js"
+    },
+
+    // vendor scripts
+    vendor: {
+      src: ["node_modules/jquery/dist/jquery.min.js"],
+      dest: {
+        path: "../js/",
+        file: "vendor.bundle.min.js"
+      }
+    }
+  },
+
+  // templates
   templates: {
-    config: "templates/",
-    pages: "templates/pages/**/*.+(html|nunjucks)",
+    src: "templates/pages/**/*.+(html|nunjucks)",
+    dest: "../",
+    basepath: "templates/",
     watch: "templates/**/*.*"
-  }
-};
-
-
-/* distribution paths
- * ------------------------------------------------ */
-var distPaths = {
-  styles: "../css/",
-  scripts: "../js/",
-  vendor: {
-    styles: "../css/",
-    scripts: "../js/"
   },
-  templates: "../"
+
+  // token replacement
+  token: /@_@(.*?)@_@/g
 };
-
-
-/* server settings
- * ------------------------------------------------ */
-var reload = browserSync.reload;
 
 
 /*
@@ -102,13 +112,7 @@ var reload = browserSync.reload;
 gulp.task("templates", function (done) {
   "use strict";
 
-  // nunjucks settings
-  nunjucksRender.nunjucks.configure(srcPaths.templates.config, {
-    watch: false,
-    trimBlocks: true
-  });
-
-  gulp.src(srcPaths.templates.pages)
+  gulp.src(config.templates.src)
 
   // init plumber
   .pipe(plumber())
@@ -119,10 +123,16 @@ gulp.task("templates", function (done) {
   }))
 
   // render nunjucks templates
-  .pipe(nunjucksRender())
+  .pipe(nunjucks({
+    path: config.templates.basepath,
+    envOptions: {
+      watch: false,
+      trimBlocks: true
+    }
+  }))
 
   // replace tokens
-  .pipe(replace(/%(.*?)%/g, replaceTokens))
+  .pipe(replace(config.token, replaceTokens))
 
   // prettify
   .pipe(prettify({
@@ -130,7 +140,7 @@ gulp.task("templates", function (done) {
   }))
 
   // write to dist
-  .pipe(gulp.dest(distPaths.templates))
+  .pipe(gulp.dest(config.templates.dest))
 
   // finish
   .on("end", done);
@@ -142,34 +152,36 @@ gulp.task("templates", function (done) {
 gulp.task("styles", function (done) {
   "use strict";
 
-  gulp.src("css/app.bundle.scss")
+  gulp.src(config.styles.src)
 
   // init plumber
   .pipe(plumber())
 
   // compile sass
-  .pipe(sass({
-    errLogToConsole: true
-  }))
+  .pipe(css_sass().on("error", css_sass.logError))
 
   // add vendor prefixes
-  .pipe(autoprefixer({
+  .pipe(css_prefix({
     browsers: ["last 2 versions"]
   }))
 
-  // write to dist
-  .pipe(gulp.dest(distPaths.styles))
+  // concat
+  .pipe(concat(config.styles.dest.file))
 
   // minify
-  .pipe(minify({discardComments: {removeAll: true}}))
+  .pipe(css_minify({
+    discardComments: {
+      removeAll: true
+    }
+  }))
 
-  // rename minified file
+  // rename
   .pipe(rename({
     extname: ".min.css"
   }))
 
   // write to dist
-  .pipe(gulp.dest(distPaths.styles))
+  .pipe(gulp.dest(config.styles.dest.path))
 
   // finish
   .on("end", done);
@@ -181,75 +193,77 @@ gulp.task("styles", function (done) {
 gulp.task("scripts", function (done) {
   "use strict";
 
-  gulp.src(srcPaths.scripts)
+  gulp.src(config.scripts.src)
 
   // init plumber
   .pipe(plumber())
 
   // do js hint check
-  .pipe(jshint())
+  .pipe(js_jshint())
 
   // reporter output
-  .pipe(jshint.reporter("default"))
+  .pipe(js_jshint.reporter("default"))
 
   // fail task on reporter output
-  .pipe(jshint.reporter("fail"))
+  .pipe(js_jshint.reporter("fail"))
 
   // concat
-  .pipe(concat("app.bundle.min.js"))
+  .pipe(concat(config.scripts.dest.file))
 
   // minify
-  .pipe(uglify({
+  .pipe(js_minify({
     mangle: false
   }))
 
-  // write to dist
-  .pipe(gulp.dest(distPaths.scripts))
+  // rename
+  .pipe(rename({
+    extname: ".min.js"
+  }))
+
+  // write to destination
+  .pipe(gulp.dest(config.scripts.dest.path))
 
   // finish
   .on("end", done);
 });
 
 
-/* minify all vendor specific styles
+/* concat all vendor specific styles
  * ------------------------------------------------ */
-gulp.task("vendor-styles", function (done) {
+gulp.task("vendor:styles", function (done) {
   "use strict";
 
-  gulp.src(srcPaths.vendor.styles)
+  gulp.src(config.styles.vendor.src)
 
   // init plumber
   .pipe(plumber())
 
   // concat all styles into vendor.bundle.min.css
-  .pipe(concat("vendor.bundle.min.css"))
-
-  // minify
-  .pipe(minify({discardComments: {removeAll: true}}))
+  .pipe(concat(config.styles.vendor.dest.file))
 
   // write to dist
-  .pipe(gulp.dest(distPaths.vendor.styles))
+  .pipe(gulp.dest(config.styles.vendor.dest.path))
 
   // finish
   .on("end", done);
 });
 
 
-/* minify all vendor specific scripts
+/* concat all vendor specific scripts
  * ------------------------------------------------ */
-gulp.task("vendor-scripts", function (done) {
+gulp.task("vendor:scripts", function (done) {
   "use strict";
 
-  gulp.src(srcPaths.vendor.scripts)
+  gulp.src(config.scripts.vendor.src)
 
   // init plumber
   .pipe(plumber())
 
   // concat all scripts into vendor.bundle.min.js
-  .pipe(concat("vendor.bundle.min.js"))
+  .pipe(concat(config.scripts.vendor.dest.file))
 
   // write to dist
-  .pipe(gulp.dest(distPaths.vendor.scripts))
+  .pipe(gulp.dest(config.scripts.vendor.dest.path))
 
   // finish
   .on("end", done);
@@ -258,22 +272,21 @@ gulp.task("vendor-scripts", function (done) {
 
 /* local webserver
  * ------------------------------------------------ */
-gulp.task("webserver", function () {
+gulp.task("serve", function () {
   "use strict";
 
-  browserSync({
+  serve({
     server: {
       baseDir: "../.",
       notify: false
     }
   });
-
 });
 
 
 /* manual build
  * ------------------------------------------------ */
-gulp.task("build", ["templates", "styles", "scripts", "vendor-styles", "vendor-scripts"]);
+gulp.task("build", ["templates", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
 
 
 /* watch files for changes
@@ -282,12 +295,12 @@ gulp.task("watch", ["build"], function () {
   "use strict";
 
   // watch and reload browsersync
-  gulp.watch(srcPaths.templates.watch, ["templates", reload]);
-  gulp.watch(srcPaths.styles, ["styles", reload]);
-  gulp.watch(srcPaths.scripts, ["scripts", reload]);
+  gulp.watch(config.templates.watch, ["templates", serve.reload]);
+  gulp.watch(config.styles.src, ["styles", serve.reload]);
+  gulp.watch(config.scripts.src, ["scripts", serve.reload]);
 });
 
 
 /* default task
  * ------------------------------------------------ */
-gulp.task("default", ["watch", "webserver"]);
+gulp.task("default", ["watch", "serve"]);
