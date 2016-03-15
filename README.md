@@ -30,6 +30,10 @@ gulp
 
 ## Version History
 
+### 1.6.2
+* update packages
+* add watcher for package.json
+
 ### 1.6.1
 * update packages
 * optimize sass error logging
