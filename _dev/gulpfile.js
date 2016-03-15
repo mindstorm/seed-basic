@@ -30,7 +30,11 @@ var js_minify = require("gulp-uglify");
 
 /* get packackage.json
  * ------------------------------------------------ */
-var pkg = JSON.parse(fs.readFileSync("./package.json"));
+var pkg;
+var getFile = function (file) {
+  "use strict";
+  return JSON.parse(fs.readFileSync(file));
+};
 
 
 /* replace tokens
@@ -109,7 +113,7 @@ var config = {
 
 /* templates
  * ------------------------------------------------ */
-gulp.task("templates", function (done) {
+gulp.task("templates", ["package"], function (done) {
   "use strict";
 
   gulp.src(config.templates.src)
@@ -170,6 +174,7 @@ gulp.task("styles", function (done) {
 
   // minify
   .pipe(css_minify({
+    zindex: false,
     discardComments: {
       removeAll: true
     }
@@ -284,6 +289,15 @@ gulp.task("serve", function () {
 });
 
 
+/* get package.json
+ * ------------------------------------------------ */
+gulp.task("package", function () {
+  "use strict";
+
+  pkg = getFile("package.json");
+});
+
+
 /* manual build
  * ------------------------------------------------ */
 gulp.task("build", ["templates", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
@@ -298,6 +312,8 @@ gulp.task("watch", ["build"], function () {
   gulp.watch(config.templates.watch, ["templates", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
+  gulp.watch("package.json", ["templates", serve.reload]);
+
 });
 
 
