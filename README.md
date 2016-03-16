@@ -27,6 +27,15 @@ Run gulp and start webserver with live-reload:
 gulp
 ```
 
+## Stage
+
+Development = default.
+
+Production
+```
+gulp prod
+```
+
 ## Version History
 
 ### 1.7.0
