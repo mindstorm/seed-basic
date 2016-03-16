@@ -7,6 +7,7 @@
  * ------------------------------------------------ */
 var gulp = require("gulp");
 var fs = require("fs");
+var merge = require("merge");
 
 
 /* include gulp plugins
@@ -19,6 +20,7 @@ var prettify = require("gulp-jsbeautifier");
 var serve = require("browser-sync");
 var data = require("gulp-data");
 var nunjucks = require("gulp-nunjucks-render");
+var environments = require("gulp-environments");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
@@ -28,12 +30,29 @@ var js_jshint = require("gulp-jshint");
 var js_minify = require("gulp-uglify");
 
 
+/* set environments
+ * ------------------------------------------------ */
+var production = environments.production;
+
+
 /* get packackage.json
  * ------------------------------------------------ */
 var pkg;
 var getFile = function (file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
+};
+var getConfig = function() {
+  "use strict";
+  
+  // get standard package.json
+  var pkg = getFile("package.json");
+  
+  // get the correct environment
+  var env = getFile( production() ? "env/env.prod.json" : "env/env.dev.json" );
+  
+  // merge & return
+  return  merge.recursive(pkg, env);
 };
 
 
@@ -102,7 +121,10 @@ var config = {
   },
 
   // token replacement
-  token: /@_@(.*?)@_@/g
+  replace: {
+    token: /@_@(.*?)@_@/g,
+    src: ["*.json", "env/*.json"]
+  }
 };
 
 
@@ -136,7 +158,7 @@ gulp.task("templates", ["package"], function (done) {
   }))
 
   // replace tokens
-  .pipe(replace(config.token, replaceTokens))
+  .pipe(replace(config.replace.token, replaceTokens))
 
   // prettify
   .pipe(prettify({
@@ -289,13 +311,17 @@ gulp.task("serve", function () {
 });
 
 
-/* get package.json
+/* get package.json combined with environment json
  * ------------------------------------------------ */
 gulp.task("package", function () {
   "use strict";
-
-  pkg = getFile("package.json");
+  pkg = getConfig();
 });
+
+
+/* set environment to PROD
+ * ------------------------------------------------ */
+gulp.task("set-prod", production.task);
 
 
 /* manual build
@@ -312,7 +338,7 @@ gulp.task("watch", ["build"], function () {
   gulp.watch(config.templates.watch, ["templates", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
-  gulp.watch("package.json", ["templates", serve.reload]);
+  gulp.watch(config.replace.src, ["templates", serve.reload]);
 
 });
 

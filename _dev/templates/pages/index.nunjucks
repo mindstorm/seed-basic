@@ -5,5 +5,5 @@
 
 {% block content %}
     {% include "partials/navigation.nunjucks" %}
-    <p>Hello world! This is HTML5 Boilerplate.</p>
+    <p>Hello world! This is HTML5 Boilerplate on @_@stage@_@.</p>
 {% endblock %}
