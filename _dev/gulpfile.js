@@ -7,6 +7,7 @@
  * ------------------------------------------------ */
 var gulp = require("gulp");
 var fs = require("fs");
+var merge = require("merge");
 
 
 /* include gulp plugins
@@ -18,6 +19,7 @@ var replace = require("gulp-replace");
 var prettify = require("gulp-jsbeautifier");
 var templateCache = require("gulp-angular-templatecache");
 var serve = require("browser-sync");
+var environments = require("gulp-environments");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
@@ -27,12 +29,29 @@ var js_jshint = require("gulp-jshint");
 var js_minify = require("gulp-uglify");
 
 
+/* set environments
+ * ------------------------------------------------ */
+var production = environments.production;
+
+
 /* get packackage.json
  * ------------------------------------------------ */
 var pkg;
 var getFile = function (file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
+};
+var getConfig = function() {
+  "use strict";
+  
+  // get standard package.json
+  var pkg = getFile("package.json");
+  
+  // get the correct environment
+  var env = getFile( production() ? "env/env.prod.json" : "env/env.dev.json" );
+  
+  // merge & return
+  return  merge.recursive(pkg, env);
 };
 
 
@@ -97,10 +116,12 @@ var config = {
     }
   },
 
-  // replace
+  // token replacement
   replace: {
+    token: /@_@(.*?)@_@/g,
     src: ["./index.html"],
-    dest: "../"
+    dest: "../",
+    watch: ["*.json", "env/*.json"]
   },
 
   // templates
@@ -112,8 +133,6 @@ var config = {
     }
   },
 
-  // token replacement
-  token: /@_@(.*?)@_@/g
 };
 
 
@@ -133,7 +152,7 @@ gulp.task("replace", ["package"], function (done) {
   .pipe(plumber())
 
   // replace tokens
-  .pipe(replace(config.token, replaceTokens))
+  .pipe(replace(config.replace.token, replaceTokens))
 
   // prettify
   .pipe(prettify({
@@ -164,6 +183,9 @@ gulp.task("templates", function (done) {
     base: ""
   }))
 
+  // replace tokens
+  .pipe(replace(config.replace.token, replaceTokens))
+  
   // minimize
   .pipe(js_minify({
     mangle: false
@@ -316,13 +338,18 @@ gulp.task("serve", function () {
 });
 
 
-/* get package.json
+/* get package.json combined with environment json
  * ------------------------------------------------ */
 gulp.task("package", function () {
   "use strict";
 
-  pkg = getFile("package.json");
+  pkg = getConfig();
 });
+
+
+/* set environment to PROD
+ * ------------------------------------------------ */
+gulp.task("set-prod", production.task);
 
 
 /* manual build
@@ -340,7 +367,7 @@ gulp.task("watch", ["build"], function () {
   gulp.watch(config.templates.src, ["templates", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
-  gulp.watch("package.json", ["replace", serve.reload]);
+  gulp.watch(config.replace.watch, ["replace", "templates", serve.reload]);
 
 });
 

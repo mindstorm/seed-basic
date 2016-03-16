@@ -1,6 +1,6 @@
 {
   "name": "seed-angular-1",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "basic project setup with angular 1.x",
   "main": "index.html",
   "author": {
@@ -17,6 +17,7 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.1",
+    "gulp-environments": "^0.1.1",
     "gulp-jsbeautifier": "^2.0.2",
     "gulp-jshint": "^2.0.0",
     "gulp-plumber": "^1.1.0",
@@ -24,7 +25,8 @@
     "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.2.0",
     "gulp-uglify": "^1.5.3",
-    "jshint": "^2.9.1"
+    "jshint": "^2.9.1",
+    "merge": "^1.2.0"
   },
   "dependencies": {
     "jquery": "^2.2.1",
