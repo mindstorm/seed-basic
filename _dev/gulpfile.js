@@ -315,6 +315,7 @@ gulp.task("serve", function () {
  * ------------------------------------------------ */
 gulp.task("package", function () {
   "use strict";
+
   pkg = getConfig();
 });
 
