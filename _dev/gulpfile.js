@@ -131,8 +131,7 @@ var config = {
       path: "../js/",
       file: "main.templates.min.js"
     }
-  },
-
+  }
 };
 
 
@@ -372,6 +371,11 @@ gulp.task("watch", ["build"], function () {
 });
 
 
-/* default task
+/* default task (DEV)
  * ------------------------------------------------ */
 gulp.task("default", ["watch", "serve"]);
+
+
+/* enviroment task (PROD)
+ * ------------------------------------------------ */
+gulp.task("prod", ["set-prod", "default"]);
