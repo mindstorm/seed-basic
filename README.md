@@ -29,6 +29,9 @@ gulp
 
 ## Version History
 
+### 1.7.0
+* add stage environment handling
+
 ### 1.6.2
 * update packages
 * add watcher for package.json
