@@ -25,7 +25,7 @@ var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
 
 var js_jshint = require("gulp-jshint");
-var js_minify = require("gulp-uglify");
+var js_cc = require("gulp-closure-compiler");
 
 
 /* set environments
@@ -99,7 +99,7 @@ var config = {
     src: ["js/**/*.js"],
     dest: {
       path: "../js/",
-      file: "main.bundle.js"
+      file: "main.bundle.min.js"
     },
 
     // vendor scripts
@@ -216,19 +216,9 @@ gulp.task("scripts", function (done) {
   // fail task on reporter output
   .pipe(js_jshint.reporter("fail"))
 
-  // concat
-  .pipe(concat(config.scripts.dest.file))
-
-  // minify
-  .pipe(js_minify({
-    mangle: false
-  }))
-
-  // rename
-  .pipe(rename({
-    extname: ".min.js"
-  }))
-
+  // closure compiler
+  .pipe(js_cc(config.scripts.dest.file))
+    
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
 

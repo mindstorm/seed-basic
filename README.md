@@ -38,6 +38,10 @@ gulp prod
 
 ## Version History
 
+### 1.7.1
+* fix for main js / css
+* use google closure compiler
+
 ### 1.7.0
 * add stage environment handling
 
