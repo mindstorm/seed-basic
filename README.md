@@ -38,6 +38,10 @@ gulp prod
 
 ## Version History
 
+### 1.7.2
+* add uncss for production
+* update packages
+
 ### 1.7.1
 * fix for main js / css
 * use google closure compiler

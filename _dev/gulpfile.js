@@ -23,6 +23,7 @@ var environments = require("gulp-environments");
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
+var css_uncss = require("gulp-uncss");
 
 var js_jshint = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
@@ -41,17 +42,17 @@ var getFile = function (file) {
   return JSON.parse(fs.readFileSync(file));
 };
 
-var getConfig = function() {
+var getConfig = function () {
   "use strict";
-  
+
   // get standard package.json
   var pkg = getFile("package.json");
-  
+
   // get the correct environment
-  var env = getFile( production() ? "env/env.prod.json" : "env/env.dev.json" );
-  
+  var env = getFile(production() ? "env/env.prod.json" : "env/env.dev.json");
+
   // merge & return
-  return  merge.recursive(pkg, env);
+  return merge.recursive(pkg, env);
 };
 
 
@@ -176,6 +177,15 @@ gulp.task("styles", function (done) {
   // concat
   .pipe(concat(config.styles.dest.file))
 
+  // uncss (only for production)
+  .pipe(
+    production(
+      css_uncss({
+        html: ["templates/index.html"]
+      })
+    )
+  )
+
   // minify
   .pipe(css_minify({
     zindex: false,
@@ -218,7 +228,7 @@ gulp.task("scripts", function (done) {
 
   // closure compiler
   .pipe(js_cc(config.scripts.dest.file))
-    
+
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
 
