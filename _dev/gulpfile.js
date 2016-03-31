@@ -16,23 +16,27 @@ var plumber = require("gulp-plumber");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
 var replace = require("gulp-replace");
-var prettify = require("gulp-jsbeautifier");
 var serve = require("browser-sync");
 var data = require("gulp-data");
 var nunjucks = require("gulp-nunjucks-render");
 var environments = require("gulp-environments");
 
+var html_min = require("gulp-htmlmin");
+var html_prettify = require("gulp-jsbeautifier");
+
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
+var css_uncss = require("gulp-uncss");
 
 var js_jshint = require("gulp-jshint");
-var js_minify = require("gulp-uglify");
+var js_cc = require("gulp-closure-compiler");
 
 
 /* set environments
  * ------------------------------------------------ */
 var production = environments.production;
+var development = environments.development;
 
 
 /* get packackage.json
@@ -42,17 +46,18 @@ var getFile = function (file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
 };
-var getConfig = function() {
+
+var getConfig = function () {
   "use strict";
-  
+
   // get standard package.json
   var pkg = getFile("package.json");
-  
+
   // get the correct environment
-  var env = getFile( production() ? "env/env.prod.json" : "env/env.dev.json" );
-  
+  var env = getFile(production() ? "env/env.prod.json" : "env/env.dev.json");
+
   // merge & return
-  return  merge.recursive(pkg, env);
+  return merge.recursive(pkg, env);
 };
 
 
@@ -63,7 +68,7 @@ var replaceTokens = function (match, tokenName) {
 
   var tokenValue = pkg[tokenName];
 
-  if (tokenValue) {
+  if (tokenValue || tokenValue === "") {
     return tokenValue;
   } else {
     console.warn("No matching token found for %s", tokenName);
@@ -79,7 +84,7 @@ var config = {
 
   // styles
   styles: {
-    src: ["css/main.bundle.scss", "css/**/*.scss", "css/**/*.css"],
+    src: ["styles/main.bundle.scss", "styles/**/*.scss", "styles/**/*.css"],
     dest: {
       path: "../css/",
       file: "main.bundle.css"
@@ -96,10 +101,10 @@ var config = {
   },
   // scripts
   scripts: {
-    src: ["js/**/*.js"],
+    src: ["scripts/**/*.js"],
     dest: {
       path: "../js/",
-      file: "main.bundle.js"
+      file: "main.bundle.min.js"
     },
 
     // vendor scripts
@@ -112,18 +117,17 @@ var config = {
     }
   },
 
-  // templates
-  templates: {
-    src: "templates/pages/**/*.+(html|nunjucks)",
-    dest: "../",
-    basepath: "templates/",
-    watch: "templates/**/*.*"
-  },
-
   // token replacement
   replace: {
     token: /@_@(.*?)@_@/g,
-    src: ["*.json", "env/*.json"]
+  },
+
+  // templates
+  templates: {
+    src: ["templates/pages/**/*.+(html|nunjucks)"],
+    dest: "../",
+    basepath: "templates/",
+    watch: ["*.json", "env/*.json", "templates/**/*.*"]
   }
 };
 
@@ -160,10 +164,25 @@ gulp.task("templates", ["package"], function (done) {
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
 
-  // prettify
-  .pipe(prettify({
-    indentSize: 4
-  }))
+  // prettyify for development
+  .pipe(
+    development(
+      html_prettify({
+        indentSize: 4
+      })
+    )
+  )
+
+  // html min for production
+  .pipe(
+    production(
+      html_min({
+        removeComments: true,
+        collapseWhitespace: true,
+        removeEmptyAttributes: true
+      })
+    )
+  )
 
   // write to dist
   .pipe(gulp.dest(config.templates.dest))
@@ -193,6 +212,15 @@ gulp.task("styles", function (done) {
 
   // concat
   .pipe(concat(config.styles.dest.file))
+
+  // uncss (only for production)
+  .pipe(
+    production(
+      css_uncss({
+        html: ["index.html"]
+      })
+    )
+  )
 
   // minify
   .pipe(css_minify({
@@ -234,18 +262,15 @@ gulp.task("scripts", function (done) {
   // fail task on reporter output
   .pipe(js_jshint.reporter("fail"))
 
-  // concat
-  .pipe(concat(config.scripts.dest.file))
+  // concat only on development
+  .pipe(development(
+    concat(config.scripts.dest.file)
+  ))
 
-  // minify
-  .pipe(js_minify({
-    mangle: false
-  }))
-
-  // rename
-  .pipe(rename({
-    extname: ".min.js"
-  }))
+  // closure compiler only on production
+  .pipe(production(
+    js_cc(config.scripts.dest.file)
+  ))
 
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
@@ -322,7 +347,7 @@ gulp.task("package", function () {
 
 /* set environment to PROD
  * ------------------------------------------------ */
-gulp.task("set-prod", production.task);
+gulp.task("env:prod", production.task);
 
 
 /* manual build
@@ -339,7 +364,6 @@ gulp.task("watch", ["build"], function () {
   gulp.watch(config.templates.watch, ["templates", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
-  gulp.watch(config.replace.src, ["templates", serve.reload]);
 
 });
 
@@ -351,4 +375,4 @@ gulp.task("default", ["watch", "serve"]);
 
 /* enviroment task (PROD)
  * ------------------------------------------------ */
-gulp.task("prod", ["set-prod", "default"]);
+gulp.task("prod", ["env:prod", "default"]);
