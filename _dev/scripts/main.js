@@ -16,7 +16,7 @@ app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $u
       main: {
         templateUrl: "views/home.html",
         controller: "DefaultCtrl"
-      },
+      }
     }
   })
 
@@ -26,7 +26,7 @@ app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $u
       main: {
         templateUrl: "views/about.html",
         controller: "DefaultCtrl"
-      },
+      }
     }
   })
 
@@ -36,7 +36,7 @@ app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $u
       main: {
         templateUrl: "views/contact.html",
         controller: "DefaultCtrl"
-      },
+      }
     }
   });
 

@@ -39,6 +39,20 @@ gulp prod
 
 ## Version History
 
+### 1.8.0
+* rename replace task
+* move main index.html to _dev-root
+* add htmlmin for production
+* html prettify only for development
+
+### 1.7.2
+* add uncss for production
+* update packages
+
+### 1.7.1
+* fix for main js / css
+* use google closure compiler
+
 ### 1.7.0
 * add stage environment handling
 

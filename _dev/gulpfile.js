@@ -16,22 +16,27 @@ var plumber = require("gulp-plumber");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
 var replace = require("gulp-replace");
-var prettify = require("gulp-jsbeautifier");
-var templateCache = require("gulp-angular-templatecache");
 var serve = require("browser-sync");
 var environments = require("gulp-environments");
+
+var html_min = require("gulp-htmlmin");
+var html_prettify = require("gulp-jsbeautifier");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
+var css_uncss = require("gulp-uncss");
 
 var js_jshint = require("gulp-jshint");
-var js_minify = require("gulp-uglify");
+var js_cc = require("gulp-closure-compiler");
+
+var ng_templatecache = require("gulp-angular-templatecache");
 
 
 /* set environments
  * ------------------------------------------------ */
 var production = environments.production;
+var development = environments.development;
 
 
 /* get packackage.json
@@ -41,17 +46,18 @@ var getFile = function (file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
 };
-var getConfig = function() {
+
+var getConfig = function () {
   "use strict";
-  
+
   // get standard package.json
   var pkg = getFile("package.json");
-  
+
   // get the correct environment
-  var env = getFile( production() ? "env/env.prod.json" : "env/env.dev.json" );
-  
+  var env = getFile(production() ? "env/env.prod.json" : "env/env.dev.json");
+
   // merge & return
-  return  merge.recursive(pkg, env);
+  return merge.recursive(pkg, env);
 };
 
 
@@ -62,7 +68,7 @@ var replaceTokens = function (match, tokenName) {
 
   var tokenValue = pkg[tokenName];
 
-  if (tokenValue) {
+  if (tokenValue || tokenValue === "") {
     return tokenValue;
   } else {
     console.warn("No matching token found for %s", tokenName);
@@ -78,7 +84,7 @@ var config = {
 
   // styles
   styles: {
-    src: ["css/main.bundle.scss", "css/**/*.scss", "css/**/*.css"],
+    src: ["styles/main.bundle.scss", "styles/**/*.scss", "styles/**/*.css"],
     dest: {
       path: "../css/",
       file: "main.bundle.css"
@@ -96,10 +102,10 @@ var config = {
 
   // scripts
   scripts: {
-    src: ["js/**/*.js"],
+    src: ["scripts/**/*.js"],
     dest: {
       path: "../js/",
-      file: "main.bundle.js"
+      file: "main.bundle.min.js"
     },
 
     // vendor scripts
@@ -119,17 +125,25 @@ var config = {
   // token replacement
   replace: {
     token: /@_@(.*?)@_@/g,
-    src: ["./index.html"],
+    src: ["index.html"],
     dest: "../",
-    watch: ["*.json", "env/*.json"]
+    watch: [
+      "index.html",
+      "*.json",
+      "env/*.json"
+    ]
   },
 
-  // templates
-  templates: {
-    src: ["templates/**/*.html"],
-    dest: {
-      path: "../js/",
-      file: "main.templates.min.js"
+  // angular
+  angular: {
+
+    // angular template cache
+    templates: {
+      src: ["templates/**/*.html"],
+      dest: {
+        path: "../js/",
+        file: "main.templates.min.js"
+      }
     }
   }
 };
@@ -153,10 +167,25 @@ gulp.task("replace", ["package"], function (done) {
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
 
-  // prettify
-  .pipe(prettify({
-    indentSize: 4
-  }))
+  // prettyify for development
+  .pipe(
+    development(
+      html_prettify({
+        indentSize: 4
+      })
+    )
+  )
+
+  // html min for production
+  .pipe(
+    production(
+      html_min({
+        removeComments: true,
+        collapseWhitespace: true,
+        removeEmptyAttributes: true
+      })
+    )
+  )
 
   // write to dist
   .pipe(gulp.dest(config.replace.dest))
@@ -166,36 +195,51 @@ gulp.task("replace", ["package"], function (done) {
 });
 
 
-/* templates
+/* angular templates
  * ------------------------------------------------ */
-gulp.task("templates", function (done) {
+gulp.task("angular:templates", ["package"], function (done) {
   "use strict";
 
-  gulp.src(config.templates.src)
+  gulp.src(config.angular.templates.src)
 
   // init plumber
   .pipe(plumber())
 
+  // html min
+  .pipe(
+    html_min({
+      removeComments: true,
+      collapseWhitespace: true,
+      removeEmptyAttributes: true
+    })
+  )
+
   // add all templates to one file
-  .pipe(templateCache(config.templates.dest.file, {
+  .pipe(ng_templatecache(config.angular.templates.dest.file, {
     module: "App",
     base: ""
   }))
 
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
-  
-  // minimize
-  .pipe(js_minify({
-    mangle: false
-  }))
+
+  // write to dist first only at production
+  .pipe(production(
+    gulp.dest(config.angular.templates.dest.path)
+  ))
+
+  // minimize only at production
+  .pipe(production(
+    js_cc(config.angular.templates.dest.file)
+  ))
 
   // write to dist
-  .pipe(gulp.dest(config.templates.dest.path))
+  .pipe(
+    gulp.dest(config.angular.templates.dest.path)
+  )
 
   // finish
   .on("end", done);
-
 });
 
 
@@ -219,6 +263,15 @@ gulp.task("styles", function (done) {
 
   // concat
   .pipe(concat(config.styles.dest.file))
+
+  // uncss (only for production)
+  .pipe(
+    production(
+      css_uncss({
+        html: ["index.html"]
+      })
+    )
+  )
 
   // minify
   .pipe(css_minify({
@@ -260,18 +313,8 @@ gulp.task("scripts", function (done) {
   // fail task on reporter output
   .pipe(js_jshint.reporter("fail"))
 
-  // concat
-  .pipe(concat(config.scripts.dest.file))
-
-  // minify
-  .pipe(js_minify({
-    mangle: false
-  }))
-
-  // rename
-  .pipe(rename({
-    extname: ".min.js"
-  }))
+  // closure compiler
+  .pipe(js_cc(config.scripts.dest.file))
 
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
@@ -353,7 +396,7 @@ gulp.task("set-prod", production.task);
 
 /* manual build
  * ------------------------------------------------ */
-gulp.task("build", ["replace", "templates", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
+gulp.task("build", ["replace", "angular:templates", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
 
 
 /* watch files for changes
@@ -362,11 +405,10 @@ gulp.task("watch", ["build"], function () {
   "use strict";
 
   // watch and reload browsersync
-  gulp.watch(config.replace.src, ["replace", serve.reload]);
-  gulp.watch(config.templates.src, ["templates", serve.reload]);
+  gulp.watch(config.replace.watch, ["replace", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
-  gulp.watch(config.replace.watch, ["replace", "templates", serve.reload]);
+  gulp.watch(config.angular.templates.src, ["angular:templates", serve.reload]);
 
 });
 

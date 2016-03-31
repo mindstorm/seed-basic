@@ -1,6 +1,6 @@
 {
   "name": "seed-angular-1",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "basic project setup with angular 1.x",
   "main": "index.html",
   "author": {
@@ -9,27 +9,29 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "angular": "^1.5.0",
-    "angular-ui-router": "^0.2.18",
-    "browser-sync": "^2.11.1",
+    "browser-sync": "^2.11.2",
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "^1.8.0",
     "gulp-autoprefixer": "^3.1.0",
+    "gulp-closure-compiler": "^0.4.0",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.1",
     "gulp-environments": "^0.1.1",
+    "gulp-htmlmin": "^1.3.0",
     "gulp-jsbeautifier": "^2.0.2",
     "gulp-jshint": "^2.0.0",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.2.0",
-    "gulp-uglify": "^1.5.3",
+    "gulp-uncss": "^1.0.5",
     "jshint": "^2.9.1",
     "merge": "^1.2.0"
   },
   "dependencies": {
-    "jquery": "^2.2.1",
-    "normalize.css": "^3.0.3"
+    "angular": "^1.5.3",
+    "angular-ui-router": "^0.2.18",
+    "jquery": "^2.2.2",
+    "normalize.css": "^4.0.0"
   }
 }
