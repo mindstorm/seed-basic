@@ -239,8 +239,13 @@ gulp.task("scripts", function (done) {
   // fail task on reporter output
   .pipe(js_jshint.reporter("fail"))
 
-  // closure compiler
-  .pipe(js_cc(config.scripts.dest.file))
+  // concat only on development
+  .pipe(concat(config.scripts.dest.file))
+
+  // closure compiler only on production
+  .pipe(production(
+    js_cc(config.scripts.dest.file)
+  ))
 
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
@@ -317,7 +322,7 @@ gulp.task("package", function () {
 
 /* set environment to PROD
  * ------------------------------------------------ */
-gulp.task("set-prod", production.task);
+gulp.task("env:prod", production.task);
 
 
 /* manual build
@@ -345,4 +350,4 @@ gulp.task("default", ["watch", "serve"]);
 
 /* enviroment task (PROD)
  * ------------------------------------------------ */
-gulp.task("prod", ["set-prod", "default"]);
+gulp.task("prod", ["env:prod", "default"]);
