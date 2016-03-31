@@ -20,6 +20,8 @@ var prettify = require("gulp-jsbeautifier");
 var serve = require("browser-sync");
 var environments = require("gulp-environments");
 
+var html_min = require("gulp-htmlmin");
+
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
@@ -32,6 +34,7 @@ var js_cc = require("gulp-closure-compiler");
 /* set environments
  * ------------------------------------------------ */
 var production = environments.production;
+var development = environments.development;
 
 
 /* get packackage.json
@@ -143,10 +146,25 @@ gulp.task("templates", ["package"], function (done) {
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
 
-  // prettify
-  .pipe(prettify({
-    indentSize: 4
-  }))
+  // prettyify for development
+  .pipe(
+    development(
+      prettify({
+        indentSize: 4
+      })
+    )
+  )
+
+  // html min for production
+  .pipe(
+    production(
+      html_min({
+        removeComments: true,
+        collapseWhitespace: true,
+        removeEmptyAttributes: true
+      })
+    )
+  )
 
   // write to dist
   .pipe(gulp.dest(config.templates.dest))

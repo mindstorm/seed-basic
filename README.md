@@ -38,6 +38,9 @@ gulp prod
 
 ## Version History
 
+### 1.7.3
+* add htmlmin for production
+
 ### 1.7.2
 * add uncss for production
 * update packages
