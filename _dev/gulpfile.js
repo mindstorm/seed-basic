@@ -16,11 +16,11 @@ var plumber = require("gulp-plumber");
 var rename = require("gulp-rename");
 var concat = require("gulp-concat");
 var replace = require("gulp-replace");
-var prettify = require("gulp-jsbeautifier");
 var serve = require("browser-sync");
 var environments = require("gulp-environments");
 
 var html_min = require("gulp-htmlmin");
+var html_prettify = require("gulp-jsbeautifier");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
@@ -66,7 +66,7 @@ var replaceTokens = function (match, tokenName) {
 
   var tokenValue = pkg[tokenName];
 
-  if (tokenValue) {
+  if (tokenValue || tokenValue === "") {
     return tokenValue;
   } else {
     console.warn("No matching token found for %s", tokenName);
@@ -82,7 +82,7 @@ var config = {
 
   // styles
   styles: {
-    src: ["css/main.bundle.scss", "css/**/*.scss", "css/**/*.css"],
+    src: ["styles/main.bundle.scss", "styles/**/*.scss", "styles/**/*.css"],
     dest: {
       path: "../css/",
       file: "main.bundle.css"
@@ -100,7 +100,7 @@ var config = {
 
   // scripts
   scripts: {
-    src: ["js/**/*.js"],
+    src: ["scripts/**/*.js"],
     dest: {
       path: "../js/",
       file: "main.bundle.min.js"
@@ -116,19 +116,14 @@ var config = {
     }
   },
 
-  // templates
-  templates: {
-    src: ["templates/**/*.html"],
-    dest: "../",
-  },
-
   // token replacement
   replace: {
     token: /@_@(.*?)@_@/g,
-    src: ["*.json", "env/*.json"]
+    src: ["./index.html"],
+    dest: "../",
+    watch: ["*.json", "env/*.json"]
   }
 };
-
 
 
 /*
@@ -136,12 +131,12 @@ var config = {
  ****************************************************/
 
 
-/* templates
+/* replace
  * ------------------------------------------------ */
-gulp.task("templates", ["package"], function (done) {
+gulp.task("replace", ["package"], function (done) {
   "use strict";
 
-  gulp.src(config.templates.src)
+  gulp.src(config.replace.src)
 
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
@@ -149,7 +144,7 @@ gulp.task("templates", ["package"], function (done) {
   // prettyify for development
   .pipe(
     development(
-      prettify({
+      html_prettify({
         indentSize: 4
       })
     )
@@ -167,7 +162,7 @@ gulp.task("templates", ["package"], function (done) {
   )
 
   // write to dist
-  .pipe(gulp.dest(config.templates.dest))
+  .pipe(gulp.dest(config.replace.dest))
 
   // finish
   .on("end", done);
@@ -199,7 +194,7 @@ gulp.task("styles", function (done) {
   .pipe(
     production(
       css_uncss({
-        html: ["templates/index.html"]
+        html: ["index.html"]
       })
     )
   )
@@ -327,7 +322,7 @@ gulp.task("set-prod", production.task);
 
 /* manual build
  * ------------------------------------------------ */
-gulp.task("build", ["templates", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
+gulp.task("build", ["replace", "styles", "scripts", "vendor:styles", "vendor:scripts"]);
 
 
 /* watch files for changes
@@ -336,10 +331,9 @@ gulp.task("watch", ["build"], function () {
   "use strict";
 
   // watch and reload browsersync
-  gulp.watch(config.templates.src, ["templates", serve.reload]);
+  gulp.watch(config.replace.watch, ["replace", serve.reload]);
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
-  gulp.watch(config.replace.src, ["templates", serve.reload]);
 
 });
 
