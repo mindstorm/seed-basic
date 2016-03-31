@@ -240,7 +240,9 @@ gulp.task("scripts", function (done) {
   .pipe(js_jshint.reporter("fail"))
 
   // concat only on development
-  .pipe(concat(config.scripts.dest.file))
+  .pipe(development(
+    concat(config.scripts.dest.file)
+  ))
 
   // closure compiler only on production
   .pipe(production(
