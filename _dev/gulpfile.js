@@ -146,9 +146,9 @@ gulp.task("replace", ["package"], function (done) {
   .pipe(replace(config.replace.token, replaceTokens))
 
   // do hint check
-  .pipe(html_hint())
+  .pipe(html_hint(".htmlhintrc"))
 
-  // reporter output  
+  // reporter output
   .pipe(html_hint.reporter("htmlhint-stylish"))
 
   // fail task on reporter output
