@@ -2,33 +2,35 @@
 <html lang="">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>{{ title }} v@_@version@_@</title>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <meta name="description" content="@_@description@_@">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} v@_@version@_@</title>
 
-    <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
+  <meta name="description" content="@_@description@_@">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Vendor -->
-    <link rel="stylesheet" href="css/vendor.bundle.min.css?v=@_@version@_@">
+  <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
 
-    <!-- App -->
-    <link rel="stylesheet" href="css/app.bundle.min.css?v=@_@version@_@">
+  <!-- Vendor -->
+  <link rel="stylesheet" href="css/vendor.bundle.min.css?v=@_@version@_@">
+
+  <!-- Main -->
+  <link rel="stylesheet" href="css/main.bundle.min.css?v=@_@version@_@">
+  
 </head>
 
 <body>
 
-    <!-- Add your site or application content here -->
-    {% block content %}{% endblock %}
+  <!-- Add your site or application content here -->
+  {% block content %}{% endblock %}
 
-    <!-- Vendor -->
-    <script src="js/vendor.bundle.min.js?v=@_@version@_@"></script>
+  <!-- Vendor -->
+  <script src="js/vendor.bundle.min.js?v=@_@version@_@"></script>
 
-    <!-- App -->
-    <script src="js/app.bundle.min.js?v=@_@version@_@"></script>
+  <!-- Main -->
+  <script src="js/main.bundle.min.js?v=@_@version@_@"></script>
 
 </body>
 

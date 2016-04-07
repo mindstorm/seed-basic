@@ -39,6 +39,11 @@ gulp prod
 
 ## Version History
 
+### 1.8.1
+* add html hint
+* add stylish reporter to js hint
+* update packages
+
 ### 1.8.0
 * rename replace task
 * move main index.html to _dev-root
