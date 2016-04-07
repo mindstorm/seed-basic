@@ -21,13 +21,14 @@ var environments = require("gulp-environments");
 
 var html_min = require("gulp-htmlmin");
 var html_prettify = require("gulp-jsbeautifier");
+var html_hint = require("gulp-htmlhint");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
 var css_uncss = require("gulp-uncss");
 
-var js_jshint = require("gulp-jshint");
+var js_hint = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
 
 
@@ -119,9 +120,9 @@ var config = {
   // token replacement
   replace: {
     token: /@_@(.*?)@_@/g,
-    src: ["./index.html"],
+    src: ["index.html"],
     dest: "../",
-    watch: ["*.json", "env/*.json"]
+    watch: ["index.html", "*.json", "env/*.json"]
   }
 };
 
@@ -138,8 +139,22 @@ gulp.task("replace", ["package"], function (done) {
 
   gulp.src(config.replace.src)
 
+  // init plumber
+  .pipe(plumber())
+
   // replace tokens
   .pipe(replace(config.replace.token, replaceTokens))
+
+  // do hint check
+  .pipe(html_hint())
+
+  // reporter output  
+  .pipe(html_hint.reporter("htmlhint-stylish"))
+
+  // fail task on reporter output
+  .pipe(html_hint.failReporter({
+    suppress: true
+  }))
 
   // prettyify for development
   .pipe(
@@ -230,14 +245,14 @@ gulp.task("scripts", function (done) {
   // init plumber
   .pipe(plumber())
 
-  // do js hint check
-  .pipe(js_jshint())
+  // do hint check
+  .pipe(js_hint())
 
   // reporter output
-  .pipe(js_jshint.reporter("default"))
+  .pipe(js_hint.reporter("jshint-stylish"))
 
   // fail task on reporter output
-  .pipe(js_jshint.reporter("fail"))
+  .pipe(js_hint.reporter("fail"))
 
   // concat only on development
   .pipe(development(
