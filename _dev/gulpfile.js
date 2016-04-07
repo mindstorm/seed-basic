@@ -169,9 +169,9 @@ gulp.task("replace", ["package"], function (done) {
   .pipe(replace(config.replace.token, replaceTokens))
 
   // do hint check
-  .pipe(html_hint())
+  .pipe(html_hint(".htmlhintrc"))
 
-  // reporter output  
+  // reporter output
   .pipe(html_hint.reporter("htmlhint-stylish"))
 
   // fail task on reporter output
@@ -183,7 +183,7 @@ gulp.task("replace", ["package"], function (done) {
   .pipe(
     development(
       html_prettify({
-        indentSize: 4
+        indentSize: 2
       })
     )
   )
@@ -216,6 +216,17 @@ gulp.task("angular:templates", ["package"], function (done) {
 
   // init plumber
   .pipe(plumber())
+
+  // do hint check
+  .pipe(html_hint(".htmlhintrc"))
+
+  // reporter output
+  .pipe(html_hint.reporter("htmlhint-stylish"))
+
+  // fail task on reporter output
+  .pipe(html_hint.failReporter({
+    suppress: true
+  }))
 
   // html min
   .pipe(
