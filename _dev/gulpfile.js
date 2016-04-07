@@ -166,7 +166,7 @@ gulp.task("templates", ["package"], function (done) {
   .pipe(replace(config.replace.token, replaceTokens))
 
   // do hint check
-  .pipe(html_hint())
+  .pipe(html_hint(".htmlhintrc"))
 
   // reporter output
   .pipe(html_hint.reporter("htmlhint-stylish"))
