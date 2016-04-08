@@ -21,14 +21,16 @@ var environments = require("gulp-environments");
 
 var html_min = require("gulp-htmlmin");
 var html_prettify = require("gulp-jsbeautifier");
-var html_hint = require("gulp-htmlhint");
+var html_check = require("gulp-htmlhint");
 
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
 var css_uncss = require("gulp-uncss");
+var css_check = require("gulp-scss-lint");
+var css_check_reporter = require("gulp-scss-lint-stylish");
 
-var js_hint = require("gulp-jshint");
+var js_check = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
 
 
@@ -45,7 +47,6 @@ var getFile = function (file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
 };
-
 var getConfig = function () {
   "use strict";
 
@@ -83,7 +84,7 @@ var config = {
 
   // styles
   styles: {
-    src: ["styles/main.bundle.scss", "styles/**/*.scss", "styles/**/*.css"],
+    src: ["styles/**/*.scss"],
     dest: {
       path: "../css/",
       file: "main.bundle.css"
@@ -146,13 +147,13 @@ gulp.task("replace", ["package"], function (done) {
   .pipe(replace(config.replace.token, replaceTokens))
 
   // do hint check
-  .pipe(html_hint(".htmlhintrc"))
+  .pipe(html_check(".htmlhintrc"))
 
   // reporter output
-  .pipe(html_hint.reporter("htmlhint-stylish"))
+  .pipe(html_check.reporter("htmlhint-stylish"))
 
   // fail task on reporter output
-  .pipe(html_hint.failReporter({
+  .pipe(html_check.failReporter({
     suppress: true
   }))
 
@@ -193,6 +194,11 @@ gulp.task("styles", function (done) {
 
   // init plumber
   .pipe(plumber())
+
+  // do lint check
+  .pipe(css_check({
+    customReport: css_check_reporter
+  }))
 
   // compile sass
   .pipe(css_sass().on("error", css_sass.logError))
@@ -246,13 +252,13 @@ gulp.task("scripts", function (done) {
   .pipe(plumber())
 
   // do hint check
-  .pipe(js_hint())
+  .pipe(js_check())
 
   // reporter output
-  .pipe(js_hint.reporter("jshint-stylish"))
+  .pipe(js_check.reporter("jshint-stylish"))
 
   // fail task on reporter output
-  .pipe(js_hint.reporter("fail"))
+  .pipe(js_check.reporter("fail"))
 
   // concat only on development
   .pipe(development(

@@ -14,8 +14,14 @@ Basic project setup based on HTML5 Boilerplate.
 
 ## Requirements
 * nodejs
+* ruby
 
 ## Setup
+
+Install scss lint ruby gem
+```
+gem install scss_lint
+```
 
 Install gulp and its plugins:
 ```
@@ -37,6 +43,9 @@ gulp prod
 ```
 
 ## Version History
+
+### 1.8.2
+* add scss lint
 
 ### 1.8.1
 * add html hint
