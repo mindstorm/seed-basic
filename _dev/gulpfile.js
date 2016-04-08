@@ -219,13 +219,13 @@ gulp.task("angular:templates", ["package"], function (done) {
   .pipe(plumber())
 
   // do hint check
-  .pipe(html_hint(".htmlhintrc"))
+  .pipe(html_check(".htmlhintrc"))
 
   // reporter output
-  .pipe(html_hint.reporter("htmlhint-stylish"))
+  .pipe(html_check.reporter("htmlhint-stylish"))
 
   // fail task on reporter output
-  .pipe(html_hint.failReporter({
+  .pipe(html_check.failReporter({
     suppress: true
   }))
 
