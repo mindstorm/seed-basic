@@ -1,9 +1,9 @@
 /*
  * JQUERY - DOCUMENT READY
  ****************************************************/
-$(function () {
+
+$(function() {
   "use strict";
 
   console.log("Hello World!");
-
 });
