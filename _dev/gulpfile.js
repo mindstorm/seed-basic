@@ -45,11 +45,11 @@ var development = environments.development;
 /* get packackage.json
  * ------------------------------------------------ */
 var pkg;
-var getFile = function (file) {
+var getFile = function(file) {
   "use strict";
   return JSON.parse(fs.readFileSync(file));
 };
-var getConfig = function () {
+var getConfig = function() {
   "use strict";
 
   // get standard package.json
@@ -65,7 +65,7 @@ var getConfig = function () {
 
 /* replace tokens
  * ------------------------------------------------ */
-var replaceTokens = function (match, tokenName) {
+var replaceTokens = function(match, tokenName) {
   "use strict";
 
   var tokenValue = pkg[tokenName];
@@ -141,7 +141,7 @@ var config = {
 
 /* templates
  * ------------------------------------------------ */
-gulp.task("templates", ["package"], function (done) {
+gulp.task("templates", ["package"], function(done) {
   "use strict";
 
   gulp.src(config.templates.src)
@@ -150,7 +150,7 @@ gulp.task("templates", ["package"], function (done) {
   .pipe(plumber())
 
   // Adding data to Nunjucks
-  .pipe(data(function () {
+  .pipe(data(function() {
     return require("./templates/data.json");
   }))
 
@@ -207,7 +207,7 @@ gulp.task("templates", ["package"], function (done) {
 
 /* styles
  * ------------------------------------------------ */
-gulp.task("styles", function (done) {
+gulp.task("styles", function(done) {
   "use strict";
 
   gulp.src(config.styles.src)
@@ -221,7 +221,8 @@ gulp.task("styles", function (done) {
   }))
 
   // compile sass
-  .pipe(css_sass().on("error", css_sass.logError))
+  .pipe(css_sass()
+    .on("error", css_sass.logError))
 
   // add vendor prefixes
   .pipe(css_prefix({
@@ -263,7 +264,7 @@ gulp.task("styles", function (done) {
 
 /* scripts
  * ------------------------------------------------ */
-gulp.task("scripts", function (done) {
+gulp.task("scripts", function(done) {
   "use strict";
 
   gulp.src(config.scripts.src)
@@ -300,7 +301,7 @@ gulp.task("scripts", function (done) {
 
 /* concat all vendor specific styles
  * ------------------------------------------------ */
-gulp.task("vendor:styles", function (done) {
+gulp.task("vendor:styles", function(done) {
   "use strict";
 
   gulp.src(config.styles.vendor.src)
@@ -321,7 +322,7 @@ gulp.task("vendor:styles", function (done) {
 
 /* concat all vendor specific scripts
  * ------------------------------------------------ */
-gulp.task("vendor:scripts", function (done) {
+gulp.task("vendor:scripts", function(done) {
   "use strict";
 
   gulp.src(config.scripts.vendor.src)
@@ -342,7 +343,7 @@ gulp.task("vendor:scripts", function (done) {
 
 /* local webserver
  * ------------------------------------------------ */
-gulp.task("serve", function () {
+gulp.task("serve", function() {
   "use strict";
 
   serve({
@@ -356,7 +357,7 @@ gulp.task("serve", function () {
 
 /* get package.json combined with environment json
  * ------------------------------------------------ */
-gulp.task("package", function () {
+gulp.task("package", function() {
   "use strict";
 
   pkg = getConfig();
@@ -375,7 +376,7 @@ gulp.task("build", ["templates", "styles", "scripts", "vendor:styles", "vendor:s
 
 /* watch files for changes
  * ------------------------------------------------ */
-gulp.task("watch", ["build"], function () {
+gulp.task("watch", ["build"], function() {
   "use strict";
 
   // watch and reload browsersync
