@@ -45,6 +45,10 @@ gulp prod
 
 ## Version History
 
+### 1.8.3
+* add jsbeautifyrc
+* update packages
+
 ### 1.8.2
 * add scss lint
 
