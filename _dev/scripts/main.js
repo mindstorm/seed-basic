@@ -6,7 +6,7 @@ var app = angular.module("App", ["ui.router"]);
 
 /* ui routes
  * ------------------------------------------------ */
-app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $urlRouterProvider) {
+app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
   "use strict";
 
 
@@ -47,7 +47,7 @@ app.config(["$stateProvider", "$urlRouterProvider", function ($stateProvider, $u
 
 /* default controller
  * ------------------------------------------------ */
-app.controller("DefaultCtrl", ["$scope", function ($scope) {
+app.controller("DefaultCtrl", ["$scope", function($scope) {
   "use strict";
 
   $scope.dummy = "Hello Angular World!";
