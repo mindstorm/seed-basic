@@ -32,6 +32,7 @@ var css_check_reporter = require("gulp-scss-lint-stylish");
 
 var js_check = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
+var js_minify = require("gulp-uglify");
 
 var ng_templatecache = require("gulp-angular-templatecache");
 
@@ -107,7 +108,7 @@ var config = {
     src: ["scripts/**/*.js"],
     dest: {
       path: "../js/",
-      file: "main.bundle.min.js"
+      file: "main.bundle.js"
     },
 
     // vendor scripts
@@ -277,12 +278,15 @@ gulp.task("styles", function(done) {
   // init plumber
   .pipe(plumber())
 
-  // do lint check
+  // do check
   .pipe(css_check({
     customReport: css_check_reporter
   }))
 
-  // compile sass
+  // concat
+  .pipe(concat(config.styles.dest.file))
+
+  // compile
   .pipe(css_sass()
     .on("error", css_sass.logError))
 
@@ -291,10 +295,7 @@ gulp.task("styles", function(done) {
     browsers: ["last 2 versions"]
   }))
 
-  // concat
-  .pipe(concat(config.styles.dest.file))
-
-  // uncss (only for production)
+  // uncss (prod)
   .pipe(
     production(
       css_uncss({
@@ -303,17 +304,20 @@ gulp.task("styles", function(done) {
     )
   )
 
+  // write to dist
+  .pipe(gulp.dest(config.styles.dest.path))
+
+  // rename
+  .pipe(rename({
+    extname: ".min.css"
+  }))
+
   // minify
   .pipe(css_minify({
     zindex: false,
     discardComments: {
       removeAll: true
     }
-  }))
-
-  // rename
-  .pipe(rename({
-    extname: ".min.css"
   }))
 
   // write to dist
@@ -343,14 +347,25 @@ gulp.task("scripts", function(done) {
   // fail task on reporter output
   .pipe(js_check.reporter("fail"))
 
-  // concat only on development
+  // concat
+  .pipe(concat(config.scripts.dest.file))
+
+  // write to destination
+  .pipe(gulp.dest(config.scripts.dest.path))
+
+  // rename
+  .pipe(rename({
+    extname: ".min.js"
+  }))
+
+  // minify: uglify (dev)
   .pipe(development(
-    concat(config.scripts.dest.file)
+    js_minify()
   ))
 
-  // closure compiler only on production
+  // minify: closure compiler (prod)
   .pipe(production(
-    js_cc(config.scripts.dest.file)
+    js_cc(config.scripts.dest.file.replace(".js", ".min.js"))
   ))
 
   // write to destination
