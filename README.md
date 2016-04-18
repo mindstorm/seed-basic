@@ -45,6 +45,11 @@ gulp prod
 
 ## Version History
 
+### 1.9.0
+* generate no-minified files for styles and scripts too
+* use uglify for dev and google cc for prod
+* change pipe order for styles
+
 ### 1.8.3
 * add jsbeautifyrc
 * update packages
