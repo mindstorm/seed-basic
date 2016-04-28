@@ -44,6 +44,12 @@ gulp prod
 
 ## Version History
 
+### 2.0.0
+* freeze package versions
+* add cache to work only with changed files
+* add order
+* component-based structure for increment building
+
 ### 1.9.0
 * generate no-minified files for styles and scripts too
 * use uglify for dev and google cc for prod
