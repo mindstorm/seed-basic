@@ -18,6 +18,9 @@ linters:
   ExtendDirective:
     enabled: true
 
+  ImportPath:
+    enabled: false
+
   ImportantRule:
     enabled: false
 

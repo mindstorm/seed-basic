@@ -38,6 +38,7 @@ var js_cc = require("gulp-closure-compiler");
 var js_minify = require("gulp-uglify");
 
 //var debug = require("gulp-debug");
+var dependencies = require("gulp-dependencies");
 
 
 /* set environments
@@ -220,13 +221,27 @@ gulp.task("styles", function(done) {
   // init plumber
   .pipe(plumber())
 
+  // use only changed files
+  .pipe(cache("styles"))
+
+  // build dependencies
+  .pipe(dependencies({
+
+    // extract 'imports' and append '.scss'
+    match: /@import\s+"(.+)"/g,
+    replace: function(f) {
+      return f + ".scss";
+    },
+
+    // destination and extension for output files
+    dest: config.styles.dest.path,
+    dependencies_file: "dependencies.styles.json"
+  }))
+
   // order
   .pipe(order(config.styles.src, {
     base: "."
   }))
-
-  // use only changed files
-  .pipe(cache("styles"))
 
   // scss-lint
   .pipe(css_check({
