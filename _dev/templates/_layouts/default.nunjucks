@@ -11,13 +11,13 @@
   <meta name="description" content="@_@description@_@" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" href="../img/icons/apple-touch-icon.png" />
 
   <!-- Vendor -->
-  <link rel="stylesheet" href="css/vendor.bundle.min.css?v=@_@version@_@" />
+  <link rel="stylesheet" href="../css/vendor.bundle.min.css?v=@_@version@_@" />
 
   <!-- Main -->
-  <link rel="stylesheet" href="css/main.bundle.min.css?v=@_@version@_@" />
+  <link rel="stylesheet" href="../css/main.bundle.min.css?v=@_@version@_@" />
 
 </head>
 
@@ -27,10 +27,10 @@
   {% block content %}{% endblock %}
 
   <!-- Vendor -->
-  <script src="js/vendor.bundle.min.js?v=@_@version@_@"></script>
+  <script src="../js/vendor.bundle.min.js?v=@_@version@_@"></script>
 
   <!-- Main -->
-  <script src="js/main.bundle.min.js?v=@_@version@_@"></script>
+  <script src="../js/main.bundle.min.js?v=@_@version@_@"></script>
 
 </body>
 

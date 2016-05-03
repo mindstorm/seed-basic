@@ -1,0 +1,9 @@
+{% set title = "About" %}
+{% set activePage = "about" %}
+
+{% extends "_layouts/default.nunjucks" %}
+
+{% block content %}
+    {% include "components/navigation/navigation.nunjucks" %}
+    <h1>About</h1>
+{% endblock %}

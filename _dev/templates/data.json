@@ -3,11 +3,11 @@
         {
             "name": "Home",
             "class": "home",
-            "url": "#"
+            "url": "index.html"
         }, {
             "name": "About",
             "class": "about",
-            "url": "#"
+            "url": "about.html"
         }, {
             "name": "Contact",
             "class": "contact",

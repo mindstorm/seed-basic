@@ -1,9 +1,12 @@
-{% set title = "Titel" %}
+{% set title = "Home" %}
 {% set activePage = "home" %}
 
-{% extends "layouts/default.nunjucks" %}
+{% extends "_layouts/default.nunjucks" %}
 
 {% block content %}
-    {% include "partials/navigation.nunjucks" %}
+    {% include "components/navigation/navigation.nunjucks" %}
     <p>Hello world! This is HTML5 Boilerplate on @_@stage@_@.</p>
+
+    {% include "components/component1/component1.html" %}
+    {% include "components/component2/component2.html" %}
 {% endblock %}
