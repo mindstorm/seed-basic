@@ -92,7 +92,8 @@ var config = {
   styles: {
     src: [
       "styles/main.scss",
-      "styles/**/*.scss"
+      "styles/**/*.scss",
+      "templates/**/*.scss"
     ],
     dest: {
       path: "../css/",
@@ -116,7 +117,8 @@ var config = {
   scripts: {
     src: [
       "scripts/main.js",
-      "scripts/**/*.js"
+      "scripts/**/*.js",
+      "templates/**/*.js"
     ],
     dest: {
       path: "../js/",
