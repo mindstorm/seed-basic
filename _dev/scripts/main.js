@@ -9,7 +9,6 @@ var app = angular.module("App", ["ui.router"]);
 app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
   "use strict";
 
-
   $stateProvider.state("home", {
     url: "/home",
     views: {

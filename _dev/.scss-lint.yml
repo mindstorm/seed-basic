@@ -18,11 +18,21 @@ linters:
   ExtendDirective:
     enabled: true
 
+  ImportPath:
+    enabled: false
+
+  ImportantRule:
+    enabled: false
+
   LeadingZero:
     enabled: false
 
   NameFormat:
     enabled: true
+
+  NestingDepth:
+    enabled: false
+    max_depth: 4
 
   PrivateNamingConvention:
     enabled: true
@@ -33,6 +43,10 @@ linters:
 
   QualifyingElement:
     enabled: false
+
+  SelectorDepth:
+    enabled: true
+    max_depth: 4
 
   SelectorFormat:
     enabled: true

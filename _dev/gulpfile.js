@@ -13,14 +13,17 @@ var merge = require("merge");
 /* include gulp plugins
  * ------------------------------------------------ */
 var plumber = require("gulp-plumber");
-var rename = require("gulp-rename");
-var concat = require("gulp-concat");
+var order = require("gulp-order");
 var replace = require("gulp-replace");
-var serve = require("browser-sync");
+var concat = require("gulp-concat");
+var rename = require("gulp-rename");
+var cache = require("gulp-cached");
+var remember = require("gulp-remember");
 var environments = require("gulp-environments");
+var prettify = require("gulp-jsbeautifier");
+var serve = require("browser-sync").create();
 
 var html_min = require("gulp-htmlmin");
-var html_prettify = require("gulp-jsbeautifier");
 var html_check = require("gulp-htmlhint");
 
 var css_sass = require("gulp-sass");
@@ -34,6 +37,8 @@ var js_check = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
 var js_minify = require("gulp-uglify");
 
+//var debug = require("gulp-debug");
+var dependencies = require("gulp-dependencies");
 var ng_templatecache = require("gulp-angular-templatecache");
 
 
@@ -87,7 +92,11 @@ var config = {
 
   // styles
   styles: {
-    src: ["styles/**/*.scss"],
+    src: [
+      "styles/main.scss",
+      "styles/**/*.scss",
+      "templates/**/*.scss"
+    ],
     dest: {
       path: "../css/",
       file: "main.bundle.css"
@@ -95,7 +104,10 @@ var config = {
 
     // vendor styles
     vendor: {
-      src: ["node_modules/normalize.css/normalize.css"],
+      src: [
+        "node_modules/normalize.css/normalize.css",
+        "styles/main.css"
+      ],
       dest: {
         path: "../css/",
         file: "vendor.bundle.min.css"
@@ -105,7 +117,11 @@ var config = {
 
   // scripts
   scripts: {
-    src: ["scripts/**/*.js"],
+    src: [
+      "scripts/main.js",
+      "scripts/**/*.js",
+      "templates/**/*.js"
+    ],
     dest: {
       path: "../js/",
       file: "main.bundle.js"
@@ -128,7 +144,9 @@ var config = {
   // token replacement
   replace: {
     token: /@_@(.*?)@_@/g,
-    src: ["index.html"],
+    src: [
+      "index.html"
+    ],
     dest: "../",
     watch: [
       "index.html",
@@ -184,7 +202,7 @@ gulp.task("replace", ["package"], function(done) {
   // prettyify for development
   .pipe(
     development(
-      html_prettify({
+      prettify({
         indentSize: 2
       })
     )
@@ -278,41 +296,69 @@ gulp.task("styles", function(done) {
   // init plumber
   .pipe(plumber())
 
-  // do check
+  // use only changed files
+  .pipe(cache("styles"))
+
+  // build dependencies
+  .pipe(dependencies({
+
+    // extract 'imports' and append '.scss'
+    match: /@import\s+"(.+)"/g,
+    replace: function(f) {
+      return f + ".scss";
+    },
+
+    // destination and extension for output files
+    dest: config.styles.dest.path,
+    dependencies_file: "dependencies.styles.json"
+  }))
+
+  // order
+  .pipe(order(config.styles.src, {
+    base: "."
+  }))
+
+  // scss-lint
   .pipe(css_check({
     customReport: css_check_reporter
   }))
-
-  // concat
-  .pipe(concat(config.styles.dest.file))
 
   // compile
   .pipe(css_sass()
     .on("error", css_sass.logError))
 
-  // add vendor prefixes
+  // add vendor prefix
   .pipe(css_prefix({
     browsers: ["last 2 versions"]
   }))
 
-  // uncss (prod)
-  .pipe(
-    production(
-      css_uncss({
-        html: ["index.html"]
-      })
-    )
-  )
+  // format
+  .pipe(prettify({
+    indentSize: 2
+  }))
 
-  // write to dist
+  // add files back again
+  .pipe(remember("styles"))
+
+  // concat
+  .pipe(concat(config.styles.dest.file))
+
+  // remove unused css (prod)
+  .pipe(production(
+    css_uncss({
+      html: ["index.html"]
+    })
+  ))
+
+  // write to destination
   .pipe(gulp.dest(config.styles.dest.path))
 
-  // rename
+  // rename for minification
   .pipe(rename({
     extname: ".min.css"
   }))
 
-  // minify
+  // minification
   .pipe(css_minify({
     zindex: false,
     discardComments: {
@@ -320,7 +366,7 @@ gulp.task("styles", function(done) {
     }
   }))
 
-  // write to dist
+  // write to destination
   .pipe(gulp.dest(config.styles.dest.path))
 
   // finish
@@ -338,7 +384,10 @@ gulp.task("scripts", function(done) {
   // init plumber
   .pipe(plumber())
 
-  // do hint check
+  // use only changed files
+  .pipe(cache("scripts"))
+
+  // js hint
   .pipe(js_check())
 
   // reporter output
@@ -347,13 +396,21 @@ gulp.task("scripts", function(done) {
   // fail task on reporter output
   .pipe(js_check.reporter("fail"))
 
+  // add files back again
+  .pipe(remember("scripts"))
+
+  // order
+  .pipe(order(config.scripts.src, {
+    base: "."
+  }))
+
   // concat
   .pipe(concat(config.scripts.dest.file))
 
   // write to destination
   .pipe(gulp.dest(config.scripts.dest.path))
 
-  // rename
+  // rename for minification
   .pipe(rename({
     extname: ".min.js"
   }))
@@ -386,6 +443,11 @@ gulp.task("vendor:styles", function(done) {
   // init plumber
   .pipe(plumber())
 
+  // order
+  .pipe(order(config.styles.vendor.src, {
+    base: "."
+  }))
+
   // concat all styles into vendor.bundle.min.css
   .pipe(concat(config.styles.vendor.dest.file))
 
@@ -407,6 +469,11 @@ gulp.task("vendor:scripts", function(done) {
   // init plumber
   .pipe(plumber())
 
+  // order
+  .pipe(order(config.scripts.vendor.src, {
+    base: "."
+  }))
+
   // concat all scripts into vendor.bundle.min.js
   .pipe(concat(config.scripts.vendor.dest.file))
 
@@ -423,7 +490,7 @@ gulp.task("vendor:scripts", function(done) {
 gulp.task("serve", function() {
   "use strict";
 
-  serve({
+  serve.init({
     server: {
       baseDir: "../.",
       notify: false
@@ -461,7 +528,6 @@ gulp.task("watch", ["build"], function() {
   gulp.watch(config.styles.src, ["styles", serve.reload]);
   gulp.watch(config.scripts.src, ["scripts", serve.reload]);
   gulp.watch(config.angular.templates.src, ["angular:templates", serve.reload]);
-
 });
 
 

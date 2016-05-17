@@ -9,7 +9,6 @@ var app = angular.module("App", ["ui.router"]);
 app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
   "use strict";
 
-
   $stateProvider.state("home", {
     url: "/home",
     views: {
@@ -53,3 +52,13 @@ app.controller("DefaultCtrl", ["$scope", function($scope) {
   $scope.dummy = "Hello Angular World!";
 
 }]);
+
+//
+// component 1
+// --------------------------------------------------
+console.log("component 1");
+
+//
+// component 2
+// --------------------------------------------------
+console.log("component 2");
