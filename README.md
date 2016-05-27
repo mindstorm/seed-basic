@@ -10,22 +10,20 @@ Basic project setup based on HTML5 Boilerplate.
 * gulp
 * scss
 * browser-sync
+
+###### Linter
+* htmlhint
 * jshint
+* stylelint
 
 ## Requirements
 * nodejs
-* ruby
 
 ## Setup
 
-Install scss lint ruby gem
-```
-gem install scss_lint
-```
-
 Install gulp and its plugins:
 ```
-npm install
+npm i
 ```
 
 Run gulp and start webserver with live-reload:
@@ -43,6 +41,10 @@ gulp prod
 ```
 
 ## Version History
+
+### 2.1.0
+* replace scss lint with stylelint
+* update packages
 
 ### 2.0.0
 * freeze package versions

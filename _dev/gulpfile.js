@@ -29,9 +29,10 @@ var html_check = require("gulp-htmlhint");
 var css_sass = require("gulp-sass");
 var css_prefix = require("gulp-autoprefixer");
 var css_minify = require("gulp-cssnano");
-var css_uncss = require("gulp-uncss");
-var css_check = require("gulp-scss-lint");
-var css_check_reporter = require("gulp-scss-lint-stylish");
+var css_check = require("stylelint");
+var css_postcss = require("gulp-postcss");
+var css_postcss_reporter = require("postcss-reporter");
+var css_postcss_scss = require("postcss-scss");
 
 var js_check = require("gulp-jshint");
 var js_cc = require("gulp-closure-compiler");
@@ -243,10 +244,22 @@ gulp.task("styles", function(done) {
     base: "."
   }))
 
-  // scss-lint
-  .pipe(css_check({
-    customReport: css_check_reporter
-  }))
+  // check styles
+  .pipe(css_postcss(
+    [
+      css_check({
+        reporters: [{
+          formatter: "string",
+          console: true
+        }]
+      }),
+      css_postcss_reporter({
+        clearMessages: true
+      })
+    ], {
+      syntax: css_postcss_scss
+    }
+  ))
 
   // compile
   .pipe(css_sass()
@@ -268,13 +281,6 @@ gulp.task("styles", function(done) {
   // concat
   .pipe(concat(config.styles.dest.file))
 
-  // remove unused css (prod)
-  .pipe(production(
-    css_uncss({
-      html: ["index.html"]
-    })
-  ))
-
   // write to destination
   .pipe(gulp.dest(config.styles.dest.path))
 
@@ -285,10 +291,8 @@ gulp.task("styles", function(done) {
 
   // minification
   .pipe(css_minify({
-    zindex: false,
-    discardComments: {
-      removeAll: true
-    }
+    autoprefixer: false,
+    zindex: false
   }))
 
   // write to destination
