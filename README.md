@@ -42,6 +42,9 @@ gulp prod
 
 ## Version History
 
+### 2.1.1
+* update packages
+
 ### 2.1.0
 * replace scss lint with stylelint
 * update packages

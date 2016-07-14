@@ -8,5 +8,15 @@
     "styles/_variables.scss": [],
     "styles/main.scss": [
         "styles/_variables.scss"
+    ],
+    "templates\\components\\component2\\component2.scss": [
+        "styles\\_variables.scss"
+    ],
+    "templates\\components\\component1\\component1.scss": [
+        "styles\\_variables.scss"
+    ],
+    "styles\\_variables.scss": [],
+    "styles\\main.scss": [
+        "styles\\_variables.scss"
     ]
 }
