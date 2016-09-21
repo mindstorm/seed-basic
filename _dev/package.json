@@ -1,6 +1,6 @@
 {
   "name": "seed-basic",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "basic project setup",
   "main": "index.html",
   "author": {
@@ -9,9 +9,9 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "browser-sync": "2.13.0",
+    "browser-sync": "2.16.0",
     "gulp": "3.9.1",
-    "gulp-autoprefixer": "3.1.0",
+    "gulp-autoprefixer": "3.1.1",
     "gulp-cached": "1.1.0",
     "gulp-closure-compiler": "0.4.0",
     "gulp-concat": "2.6.0",
@@ -25,19 +25,19 @@
     "gulp-jshint": "2.0.1",
     "gulp-order": "1.1.1",
     "gulp-plumber": "1.1.0",
-    "gulp-postcss": "6.1.1",
+    "gulp-postcss": "6.2.0",
     "gulp-remember": "0.3.1",
     "gulp-rename": "1.2.2",
     "gulp-replace": "0.5.4",
     "gulp-sass": "2.3.2",
-    "gulp-uglify": "1.5.4",
+    "gulp-uglify": "2.0.0",
     "htmlhint-stylish": "1.0.3",
-    "jshint": "2.9.2",
-    "jshint-stylish": "2.2.0",
+    "jshint": "2.9.3",
+    "jshint-stylish": "2.2.1",
     "merge": "1.2.0",
     "postcss-reporter": "1.4.1",
-    "stylelint": "7.0.1",
-    "stylelint-config-standard": "11.0.0"
+    "stylelint": "7.3.1",
+    "stylelint-config-standard": "13.0.2"
   },
   "dependencies": {
     "jquery": "3.1.0",
