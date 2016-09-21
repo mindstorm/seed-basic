@@ -42,6 +42,9 @@ gulp prod
 
 ## Version History
 
+### 2.1.2
+* update packages
+
 ### 2.1.1
 * update packages
 
